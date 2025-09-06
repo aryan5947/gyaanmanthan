@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Aapki website ka title, jo browser tab mein dikhega -->
+    <title>GyaanManthan - Jald Aa Rahe Hain</title>
+    
+    <!-- Google Fonts for better look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;700&family=Teko:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Social Media Icons ke liye Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        /* CSS Styling */
+        :root {
+            --primary-color: #f39c12; /* Sunahra/Orange Rang */
+            --bg-color: #1a1a1a;
+            --container-bg: #2c2c2c;
+            --text-color: #e0e0e0;
+            --heading-color: #ffffff;
+            --success-color: #2ecc71;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://placehold.co/1920x1080/1a1a1a/2c2c2c?text=GyaanManthan') no-repeat center center/cover;
+        }
+
+        .container {
+            background-color: var(--container-bg);
+            padding: 40px 50px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+            max-width: 700px;
+            width: 100%;
+            border-top: 5px solid var(--primary-color);
+        }
+
+        .logo {
+            font-family: 'Teko', sans-serif;
+            font-size: 5em;
+            font-weight: 700;
+            color: var(--heading-color);
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            line-height: 1;
+        }
+        
+        .logo span {
+            color: var(--primary-color);
+        }
+
+        p.tagline {
+            font-weight: 300;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            color: var(--text-color);
+        }
+        
+        .subscribe-section {
+            margin-top: 20px;
+            margin-bottom: 40px;
+        }
+
+        .subscribe-text {
+            font-size: 1em;
+            margin-bottom: 20px;
+            color: var(--text-color);
+        }
+
+        .subscribe-form {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .subscribe-form input {
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #555;
+            background-color: #3d3d3d;
+            color: var(--text-color);
+            width: 100%;
+            max-width: 300px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1em;
+            text-align: center;
+        }
+        
+        .subscribe-form input::placeholder {
+            color: #aaa;
+        }
+
+        .subscribe-form button {
+            padding: 15px 30px;
+            border-radius: 8px;
+            border: none;
+            background-color: var(--primary-color);
+            color: #1a1a1a;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 1em;
+        }
+
+        .subscribe-form button:hover {
+            background-color: #ffb84d;
+        }
+
+        .subscribe-form button:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+        }
+        
+        #form-message {
+            margin-top: 15px;
+            font-weight: bold;
+            color: var(--success-color);
+            height: 20px;
+        }
+
+        .social-links {
+            margin-top: 40px;
+        }
+        
+        .social-links a {
+            color: var(--text-color);
+            font-size: 1.6em;
+            margin: 0 15px;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        .social-links a:hover {
+            color: var(--primary-color);
+            transform: scale(1.2);
+        }
+        
+        /* Mobile ke liye responsive styling */
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 25px;
+            }
+            .logo {
+                font-size: 3.5em;
+            }
+            .subscribe-form {
+                flex-direction: column;
+                align-items: center;
+            }
+            .subscribe-form input, .subscribe-form button {
+                width: 100%;
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Text wala Logo -->
+        <h1 class="logo">Gyaan<span>Manthan</span></h1>
+        <p class="tagline">Gyaan aur vichaaron ki ek nayi duniya. Hum jald hi live honge!</p>
+        
+        <div class="subscribe-section">
+            <p class="subscribe-text">Naye updates paane ke liye subscribe karein. Hum aapko launch ke samay email bhejenge.</p>
+            
+            <!-- === IMPORTANT === -->
+            <!-- Neeche 'action' mein apna Formspree URL daalein -->
+            <form class="subscribe-form" id="subscribeForm" action="https://formspree.io/f/mvgbveqy" method="POST">
+                <input type="email" name="email" id="emailInput" placeholder="Aapka email address" required>
+                <button type="submit" id="submitButton">Mujhe Batayein</button>
+            </form>
+            <p id="form-message"></p>
+        </div>
+        
+        <div class="social-links">
+            <!-- Yahan '#' ki jagah apne social media links daalein -->
+            <a href="#" target="_blank" title="Twitter"><i class="fab fa-twitter"></i></a>
+            <a href="#" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="#" target="_blank" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
+        </div>
+    </div>
+
+</body>
+</html>
+
