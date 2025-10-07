@@ -1,5 +1,5 @@
+import { useEffect } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
-import { HelmetProvider } from "react-helmet-async"; 
 import ErrorBoundary from "./components/ErrorBoundary"; 
 import AdsPage from "./pages/AdsPage";
 
@@ -48,82 +48,94 @@ export default function App() {
   // 🔥 App start होते ही auth check
   useAuthCheck();
 
+  // ✅ Service Worker registration
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("/sw.js")
+        .then((reg) => {
+          console.log("✅ Service Worker registered:", reg);
+        })
+        .catch((err) => {
+          console.error("❌ Service Worker registration failed:", err);
+        });
+    }
+  }, []);
+
   return (
     <ErrorBoundary>
-      <HelmetProvider>
-        <Routes>
-          <Route element={<Layout />}>
-            {/* Public Routes */}
-            <Route path="/" element={<Home />} />
-            <Route path="/feed" element={<FeedPage />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/verify-email" element={<VerifyEmail />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/privacy" element={<Privacy />} />
-            <Route path="/disclaimer" element={<Disclaimer />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/ads" element={<AdsPage />} />
-            <Route path="/user/:id" element={<UserProfile />} />
+      <Routes>
+        <Route element={<Layout />}>
+          {/* Public Routes */}
+          <Route path="/" element={<Home />} />
+          <Route path="/feed" element={<FeedPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/verify-email" element={<VerifyEmail />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/disclaimer" element={<Disclaimer />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/ads" element={<AdsPage />} />
+          <Route path="/user/:id" element={<UserProfile />} />
 
-            {/* PostMeta Routes */}
-            <Route path="/post-meta/feed" element={<PostMetaFeed />} />
-            <Route path="/post-meta/create" element={
-              <ProtectedRoute>
-                <PostMetaForm />
-              </ProtectedRoute>
-            } />
-            <Route path="/post-meta/user/:id" element={<UserPostMetas />} />
-            <Route path="/post-meta/:id" element={<PostMetaDetail />} />
+          {/* PostMeta Routes */}
+          <Route path="/post-meta/feed" element={<PostMetaFeed />} />
+          <Route path="/post-meta/create" element={
+            <ProtectedRoute>
+              <PostMetaForm />
+            </ProtectedRoute>
+          } />
+          <Route path="/post-meta/user/:id" element={<UserPostMetas />} />
+          <Route path="/post-meta/:id" element={<PostMetaDetail />} />
 
-            {/* Post detail routes */}
-            <Route path="/post/:id" element={<PostWithFeed />} />
-            <Route path="/edit-post/:id" element={
-              <ProtectedRoute>
-                <EditPostPage />
-              </ProtectedRoute>
-            } />
+          {/* Post detail routes */}
+          <Route path="/post/:id" element={<PostWithFeed />} />
+          <Route path="/edit-post/:id" element={
+            <ProtectedRoute>
+              <EditPostPage />
+            </ProtectedRoute>
+          } />
 
-            {/* Selector */}
-            <Route
-              path="/choose-post-type"
-              element={<PostTypeSelector onClose={() => navigate(-1)} />}
-            />
+          {/* Selector */}
+          <Route
+            path="/choose-post-type"
+            element={<PostTypeSelector onClose={() => navigate(-1)} />}
+          />
 
-            {/* Notifications */}
-            <Route path="/notifications" element={
-              <ProtectedRoute>
-                <NotificationTab />
-              </ProtectedRoute>
-            } />
+          {/* Notifications */}
+          <Route path="/notifications" element={
+            <ProtectedRoute>
+              <NotificationTab />
+            </ProtectedRoute>
+          } />
 
-            {/* Protected Routes */}
-            <Route path="/dashboard" element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            } />
-            <Route path="/create" element={
-              <ProtectedRoute>
-                <Create />
-              </ProtectedRoute>
-            } />
-            <Route path="/profile" element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            } />
-            <Route path="/edit-profile" element={
-              <ProtectedRoute>
-                <EditProfile />
-              </ProtectedRoute>
-            } />
-          </Route>
-        </Routes>
+          {/* Protected Routes */}
+          <Route path="/dashboard" element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/create" element={
+            <ProtectedRoute>
+              <Create />
+            </ProtectedRoute>
+          } />
+          <Route path="/profile" element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          } />
+          <Route path="/edit-profile" element={
+            <ProtectedRoute>
+              <EditProfile />
+            </ProtectedRoute>
+          } />
+        </Route>
+      </Routes>
 
-        {/* 🔥 Global Login Modal (always mounted) */}
-        <LoginModal />
-      </HelmetProvider>
+      {/* 🔥 Global Login Modal (always mounted) */}
+      <LoginModal />
     </ErrorBoundary>
   );
 }
