@@ -1,0 +1,119 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6); /* काला पारदर्शी बैकग्राउंड */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal-container {
+  background: linear-gradient(120deg, #191919 0%, #232018 100%); /* गहरा ब्लैक-ग्रेडिएंट */
+  border-radius: 14px;
+  padding: 2rem;
+  width: 90%;
+  max-width: 500px;
+  position: relative;
+  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.54), 0 1.5px 9px rgba(212, 175, 55, 0.07); /* गोल्डन शैडो */
+  border: 2px solid #d4af37; /* गोल्डन बॉर्डर */
+  background-size: cover;
+  background-position: center;
+}
+
+.modal-close {
+   position: absolute;
+  top: 10px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+  color: #d4af37; /* गोल्डन कलर */
+  transition: color 0.3s;
+}
+
+.modal-close:hover {
+  color: #ffd700;
+}
+
+.modal-title {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+  font-size: 1.7rem;
+  color: #d4af37; /* गोल्डन रंग */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+.modal-options {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.option-card {
+  cursor: pointer;
+  border: 2px solid #d4af37;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  background: #1a1a0d; /* गहरे ब्लैक और गोल्डन कम्प्लीमेंट */
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+  font-weight: 600;
+  color: #d4af37;
+  transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+}
+
+.option-card:hover {
+  background: #2c2a10;
+  transform: scale(1.05);
+  box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4);
+}
+@media (max-width: 600px) {
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw; /* पूरे viewport */
+    height: 100dvh; /* Modern viewport unit */
+    background: rgba(0, 0, 0, 0.7); /* थोड़ा गहरा for better backdrop */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+  }
+
+  .modal-container {
+    background: linear-gradient(120deg, #191919 0%, #232018 100%);
+    border-radius: 10px;
+    padding: 1rem 0.7rem; /* मोबाइल के लिए हल्के गैप्स */
+    width: 96vw; /* लगभग पूरी चौड़ाई, साइड स्पेस भी */
+    max-width: 99vw;
+    position: relative;
+    box-shadow: 0 2px 12px rgba(212,175,55,0.14); /* हल्का शैडो */
+    border: 1.5px solid #d4af37;
+    background-size: cover;
+    background-position: center;
+  }
+
+  .modal-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.7rem;
+    color: #ffd700;
+  }
+
+  .option-card {
+    padding: 0.5rem 0.7rem;
+    font-size: 0.85rem;
+    border-radius: 8px;
+  }
+
+  .modal-close {
+    font-size: 1.2rem;
+    top: 6px;
+    right: 8px;
+  }
+}

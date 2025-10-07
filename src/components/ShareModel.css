@@ -1,0 +1,234 @@
+:root {
+  --gm-bg: #0b0b0c;
+  --gm-surface: #121214;
+  --gm-elev: #17171a;
+  --gm-text: #e9e9ee;
+  --gm-muted: #a9a9b4;
+  --gm-border: #242428;
+  --gm-gold: #c9a34a;
+  --gm-gold-2: #f3d27b;
+  --gm-gold-3: #8a6a2a;
+  --gm-focus: #3a3af5;
+  --shadow-1: 0 10px 30px rgba(0,0,0,0.45);
+  --shadow-2: 0 20px 50px rgba(0,0,0,0.55);
+  --radius: 14px;
+  --radius-sm: 10px;
+  --radius-pill: 999px;
+  --ts-1: 220ms cubic-bezier(.2,.7,.2,1);
+  --ts-2: 320ms cubic-bezier(.2,.7,.2,1);
+}
+
+/* Overlay */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(1200px 800px at 70% -10%, rgba(201,163,74,0.08), transparent 60%), rgba(0,0,0,0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  z-index: 1000;
+  animation: fadeIn var(--ts-2) both;
+}
+
+/* Panel */
+.modal.share-modal {
+  width: min(680px, 100%);
+  background: linear-gradient(180deg, var(--gm-surface), var(--gm-elev));
+  border: 1px solid var(--gm-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-2);
+  color: var(--gm-text);
+  padding: 22px 22px 18px;
+  position: relative;
+  transform: translateY(10px) scale(.98);
+  opacity: 0;
+  animation: popIn var(--ts-2) .06s both;
+}
+
+/* Title */
+.modal-title {
+  font-size: 20px;
+  letter-spacing: 0.2px;
+  font-weight: 600;
+  margin: 2px 0 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(90deg, var(--gm-gold), var(--gm-gold-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Close button */
+.modal-close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  height: 36px;
+  width: 36px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--gm-border);
+  background: linear-gradient(180deg, #141416, #121214);
+  color: var(--gm-muted);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: transform var(--ts-1), border-color var(--ts-1), color var(--ts-1), background var(--ts-1);
+}
+
+.modal-close-btn:hover {
+  color: var(--gm-text);
+  border-color: #2d2d33;
+  transform: translateY(-1px);
+}
+
+.modal-close-btn:active {
+  transform: translateY(0);
+}
+
+.modal-close-btn .icon {
+  height: 18px;
+  width: 18px;
+  stroke-width: 1.8;
+}
+
+/* Grid of buttons */
+.share-buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 720px) {
+  .share-buttons-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .share-buttons-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Share button */
+.share-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--gm-border);
+  background: linear-gradient(180deg, #141416, #101012);
+  color: var(--gm-text);
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform var(--ts-1), border-color var(--ts-1), background var(--ts-1), box-shadow var(--ts-1);
+  box-shadow: var(--shadow-1);
+  min-height: 52px;
+}
+
+.share-btn:hover {
+  transform: translateY(-2px);
+  border-color: #313139;
+  background: linear-gradient(180deg, #16161a, #121214);
+  box-shadow: 0 14px 34px rgba(0,0,0,0.5);
+}
+
+.share-btn:active {
+  transform: translateY(0);
+}
+
+/* Share icon (SVG or img) */
+.share-icon {
+  height: 22px;
+  width: 22px;
+  flex: 0 0 22px;
+  filter: drop-shadow(0 0 0 transparent);
+  opacity: 0.95;
+}
+
+.share-btn span {
+  font-size: 14px;
+  line-height: 1;
+  color: var(--gm-text);
+}
+
+/* Special brand glows on hover (optional) */
+.share-btn[title*="WhatsApp"]:hover {
+  box-shadow: 0 10px 30px rgba(37, 211, 102, 0.15);
+}
+.share-btn[title*="Facebook"]:hover {
+  box-shadow: 0 10px 30px rgba(24, 119, 242, 0.15);
+}
+.share-btn[title*="Telegram"]:hover {
+  box-shadow: 0 10px 30px rgba(0, 136, 204, 0.16);
+}
+.share-btn[title*="LinkedIn"]:hover {
+  box-shadow: 0 10px 30px rgba(10, 102, 194, 0.16);
+}
+.share-btn[title*="Reddit"]:hover {
+  box-shadow: 0 10px 30px rgba(255, 69, 0, 0.14);
+}
+
+/* URL preview row */
+.share-url-preview {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px dashed #2a2a30;
+  background: linear-gradient(180deg, #101012, #0d0d0f);
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  color: var(--gm-muted);
+  font-size: 13px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.share-url-preview .icon {
+  height: 18px;
+  width: 18px;
+  color: var(--gm-gold);
+  stroke-width: 1.8;
+}
+
+.share-url-preview span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Focus states for accessibility */
+.modal.share-modal :where(a, button) {
+  outline: none;
+}
+
+.modal.share-modal :where(a:focus-visible, button:focus-visible) {
+  box-shadow: 0 0 0 3px rgba(58,58,245,0.35);
+  border-color: var(--gm-focus);
+}
+
+/* Subtle separators when needed */
+.modal.share-modal hr {
+  height: 1px;
+  border: 0;
+  background: linear-gradient(90deg, transparent, #26262c, transparent);
+  margin: 14px 0;
+  opacity: .9;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes popIn {
+  0% { opacity: 0; transform: translateY(10px) scale(.98); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}

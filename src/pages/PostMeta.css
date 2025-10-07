@@ -1,0 +1,249 @@
+/* ===== Overlay ===== */
+.post-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(91, 112, 131, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 5vh;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+/* ===== Modal Container ===== */
+.post-modal-content {
+  background-color: #15202b;
+  color: #d9d9d9;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  animation: slideUp 0.25s ease-out;
+}
+
+/* ===== Header ===== */
+.modal-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid #38444d;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  color: #d9d9d9;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s;
+}
+
+.modal-close-btn:hover {
+  background-color: rgba(217, 217, 217, 0.1);
+}
+
+/* ===== Body ===== */
+.modal-body {
+  display: flex;
+  padding: 16px;
+  gap: 12px;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.user-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: #38444d;
+  flex-shrink: 0;
+}
+
+.input-area {
+  flex-grow: 1;
+  padding-top: 12px;
+}
+
+/* ===== Main Title Textarea ===== */
+.main-textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #d9d9d9;
+  font-size: 20px;
+  resize: none;
+  min-height: 80px;
+  font-family: inherit;
+}
+
+.main-textarea::placeholder {
+  color: #6e767d;
+}
+
+/* ===== Preview Grid ===== */
+.preview-container {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 8px;
+}
+
+.preview-item {
+  position: relative;
+}
+
+.preview-image,
+.preview-video {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #38444d;
+}
+
+/* ===== Individual Cut Button ===== */
+.cut-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  line-height: 18px;
+  text-align: center;
+  transition: background 0.15s;
+}
+
+.cut-btn:hover {
+  background: rgba(0,0,0,0.8);
+}
+
+/* ===== Extra Fields ===== */
+.extra-fields {
+  margin-top: 16px;
+  border-top: 1px solid #38444d;
+  padding-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.extra-fields input,
+.extra-fields select,
+.extra-fields textarea {
+  width: 100%;
+  background-color: #253341;
+  border: 1px solid #38444d;
+  border-radius: 4px;
+  padding: 8px 12px;
+  color: #d9d9d9;
+  font-size: 15px;
+}
+
+.extra-fields input:focus,
+.extra-fields select:focus,
+.extra-fields textarea:focus {
+  outline: none;
+  border-color: #1d9bf0;
+}
+
+/* ===== Footer ===== */
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid #38444d;
+}
+
+.action-icons {
+  display: flex;
+  gap: 8px;
+}
+
+.action-icon-btn {
+  background: none;
+  border: none;
+  color: #1d9bf0;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background-color 0.15s;
+}
+
+.action-icon-btn:hover {
+  background-color: rgba(29, 155, 240, 0.1);
+}
+
+/* ===== Main Cut Button ===== */
+.main-cut-btn {
+  background: #f4212e;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.main-cut-btn:hover {
+  background: #d30f1f;
+}
+
+/* ===== Post Button ===== */
+.post-btn {
+  background-color: #1d9bf0;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.post-btn:hover {
+  background-color: #0d8ae5;
+}
+
+.post-btn:disabled {
+  background-color: #0e4e78;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: not-allowed;
+}
+
+/* ===== Hide default file input ===== */
+input[type="file"] {
+  display: none;
+}
+
+/* ===== Animations ===== */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}

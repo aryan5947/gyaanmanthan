@@ -1,0 +1,89 @@
+.legal {
+  background: linear-gradient(120deg, #121212 0%, #1f1f1a 100%);
+  border-radius: 16px;
+  max-width: 620px;
+  margin: 5px auto 48px; /* ऊपर का margin कम किया */
+  box-shadow: 0 6px 38px #000c, 0 1.5px 10px #d4af3725;
+  padding: 15px 28px 30px; /* ऊपर का padding घटाया */
+  color: #f7e6bf;
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  position: relative;
+}
+
+.legal__header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.legal__title {
+  font-size: 2.3rem;
+  font-weight: 900;
+  color: #ffd700;
+  letter-spacing: 1.4px;
+  text-shadow: 0 3px 22px #1a1a1a88;
+}
+
+.legal__divider {
+  height: 2.75px;
+  width: 92%;
+  margin: 38px auto 34px auto;
+  background: linear-gradient(90deg, #d4af37 16%, #232319 65%, #d4af37 100%);
+  border-radius: 12px;
+  opacity: 0.75;
+}
+
+.legal__section {
+  margin-bottom: 21px;
+  background: rgba(38, 31, 20, 0.37);
+  border-radius: 13px;
+  padding: 18px 24px 16px;
+  box-shadow: 0 1.8px 6px #d4af3730;
+}
+
+.legal__subtitle {
+  color: #ffe47f;
+  font-size: 1.38rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  text-shadow: 0 1.2px 12px #18181880;
+  letter-spacing: 0.5px;
+}
+
+.legal__text {
+  font-size: 1.17rem;
+  line-height: 1.72;
+  margin-bottom: 9px;
+  color: #efd89a;
+  font-weight: 500;
+}
+
+.legal__section--en .legal__text {
+  color: #f2e9d5;
+}
+
+.legal__section--hi .legal__text {
+  color: #f0d481;
+}
+
+strong {
+  color: #ffd700;
+  font-weight: 700;
+  text-shadow: 0 0 4px #d4af3722;
+}
+
+@media (max-width: 700px) {
+  .legal {
+    max-width: 97vw;
+    padding: 22px 14px 20px;
+    font-size: 1rem;
+  }
+  .legal__title {
+    font-size: 1.4rem;
+  }
+  .legal__subtitle {
+    font-size: 1.05rem;
+  }
+  .legal__section {
+    padding: 8px 10px;
+  }
+}

@@ -1,0 +1,15 @@
+.page-header {
+  margin-bottom: 2rem;
+  text-align: left;
+}
+
+.page-header h1 {
+  font-size: 2rem;
+  color: #00ffe0;
+  text-shadow: 0 0 6px #00ffe0;
+}
+
+.page-header p {
+  font-size: 1rem;
+  color: #ccc;
+}

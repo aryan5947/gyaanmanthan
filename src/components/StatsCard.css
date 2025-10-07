@@ -1,0 +1,44 @@
+/* StatsCard.css */
+
+/* Card container */
+.stats-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: fadeInUp 0.5s ease;
+}
+
+/* Hover lift effect */
+.stats-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Title styling */
+.stats-card h3 {
+  font-size: 1.125rem;
+  color: #1d4ed8; /* Tailwind's blue-700 */
+  margin-bottom: 0.5rem;
+}
+
+/* List styling */
+.stats-card ul {
+  color: #374151; /* Tailwind's gray-700 */
+  list-style: none;
+  padding-left: 0;
+}
+
+.stats-card li {
+  margin-bottom: 0.25rem;
+  font-size: 0.95rem;
+}
+
+/* Fade-in animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

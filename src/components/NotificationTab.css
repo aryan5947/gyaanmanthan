@@ -1,0 +1,120 @@
+.notification-tab {
+  background: #181818; /* deep black */
+  color: #eee;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.16);
+  padding: 18px 14px;
+  max-width: 420px;
+  margin: 32px auto;
+  font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+}
+.notification-tab h3 {
+  font-size: 1.18rem;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  color: #ffd700; /* gold headline */
+  font-weight: 600;
+}
+.notification-tab h3 button {
+  background: linear-gradient(90deg,#ffa700 80%, #d9b100 100%);
+  color: #181818;
+  border: none;
+  border-radius: 5px;
+  padding: 4px 13px;
+  font-weight: 500;
+  margin-left: 12px;
+  cursor: pointer;
+  font-size: 1rem;
+  box-shadow: 0 1px 3px #0002;
+  transition: background 0.2s;
+}
+.notification-tab h3 button:hover {
+  background: #ffd700;
+  color: #212121;
+}
+.notification-tab ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.notification-tab li {
+  background: linear-gradient(84deg,#212121 93%,#2c2c2c 100%);
+  border-radius: 7px;
+  margin-bottom: 16px;
+  border: 1px solid #2e2e2e;
+  padding: 14px 13px 10px 13px;
+  box-shadow: 0 1px 5px #0001;
+  position: relative;
+  transition: background 0.15s;
+}
+.notification-tab li.unread {
+  background: linear-gradient(90deg,#232323 92%, #ffd70022 100%);
+  border: 1px solid #ffd700bb;
+}
+.notification-tab li strong {
+  color: #ffd700;
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+}
+.notification-tab li p {
+  margin: 6px 0 3px 0;
+  color: #fffefa;
+  font-size: 0.97rem;
+  line-height: 1.44;
+}
+.notification-tab li small {
+  color: #a79f7d;
+  font-size: 0.82rem;
+  font-weight: 400;
+}
+.notification-tab li .unread-dot {
+  position: absolute;
+  top: 11px;
+  right: 13px;
+  background: #ffd700;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1.5px solid #181818;
+  box-shadow: 0 0 6px #ffd70077;
+}
+.notification-tab li button {
+  margin-top: 8px;
+  background: #ffd700;
+  color: #181818;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 0.91rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  box-shadow: 0 0.5px 2px #ffd70044;
+}
+.notification-tab li button:hover {
+  background: #e9c941;
+  color: #232323;
+}
+
+@media (max-width: 650px) {
+  .notification-tab {
+    padding: 4vw 2vw;
+    max-width: 98vw;
+  }
+  .notification-tab h3 {
+    font-size: 1.02rem;
+  }
+  .notification-tab li {
+    padding: 13px 8px 9px 8px;
+  }
+}
+
+@media (max-width: 400px) {
+  .notification-tab {
+    font-size: 0.96rem;
+  }
+  .notification-tab h3 {
+    font-size: 0.93rem;
+  }
+}

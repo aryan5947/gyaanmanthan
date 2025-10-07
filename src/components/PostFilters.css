@@ -1,0 +1,54 @@
+.post-filters {
+  display: inline-flex;              /* ⬅️ अब inline-flex ताकि पूरी row न घेरे */
+  align-items: center;
+  padding: 0.1rem 0.35rem;           /* slim padding */
+  background: linear-gradient(120deg, #1a1a1a 0%, #232323 100%);
+  border-radius: 0.4rem;
+  box-shadow: 0 1px 4px #000a, 0 1px 3px #d4af3725;
+  border: 1px solid #232319;
+  max-width: fit-content;            /* ⬅️ सिर्फ content जितनी चौड़ाई */
+  transition: background-color 0.3s ease, box-shadow 0.3s;
+}
+
+.post-filters:hover {
+  background: linear-gradient(120deg, #222019 0%, #2b2b23 100%);
+  box-shadow: 0 2px 8px #000c, 0 1.5px 5px #d4af3740;
+}
+
+.post-filters input[type="text"] {
+  border: 1px solid #d4af37;
+  border-radius: 0.3rem;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.8rem;
+  background: #181812;
+  color: #ffd700;
+  outline-offset: 2px;
+  transition: border-color 0.3s, box-shadow 0.3s, background 0.2s;
+  width: 12rem;                      /* ⬅️ fixed compact width */
+  box-shadow: 0 1px 2px #0002;
+}
+
+.post-filters input[type="text"]::placeholder {
+  color: #ffe18e;
+  font-style: italic;
+  opacity: 0.7;
+}
+
+.post-filters input[type="text"]:focus {
+  border-color: #ffe067;
+  box-shadow: 0 0 0 2px #ffd70033;
+  background: #232319;
+}
+
+
+@media (max-width: 640px) {
+  .post-filters {
+    padding: 0.4rem 0.6rem;
+  }
+
+  .post-filters input[type="text"] {
+    max-width: 100%;
+    font-size: 0.85rem;
+    padding: 0.4rem 0.8rem;
+  }
+}

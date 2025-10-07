@@ -1,0 +1,93 @@
+/* Container for the tab buttons (dimensions unchanged) */
+.tab-container {
+  display: flex;
+  border-bottom: 1px solid rgba(242, 214, 123, 0.18); /* subtle gold tint */
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0)) ,
+    #0c0d10; /* dark premium surface */
+}
+
+/* Base tab button style (spacing/size preserved) */
+.tab-button {
+  flex: 1;
+  padding: 12px 20px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: #cfcfd6; /* soft light text */
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  transition: color 220ms ease, transform 180ms ease, filter 200ms ease;
+  outline: none;
+}
+
+/* Shared underline track (for hover + active) */
+.tab-button::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px; /* matches container border */
+  height: 3px;
+  width: 0;
+  background: linear-gradient(90deg, #caa22a, #f2d67b);
+  box-shadow: 0 6px 14px rgba(242, 214, 123, 0.28);
+  transition: width 260ms cubic-bezier(.22,.8,.32,1), opacity 200ms ease;
+  opacity: 0.95;
+}
+
+/* Hover: tasteful lift + partial underline */
+.tab-button:hover {
+  color: #f0f0f5;
+  transform: translateY(-1px);
+  filter: saturate(1.06);
+}
+
+/* Focus ring: gold glow */
+.tab-button:focus-visible {
+  box-shadow: 0 0 0 3px rgba(202,162,42,0.28);
+  border-radius: 10px; /* visual only; no layout change */
+}
+
+/* Active: stronger contrast + full underline animation */
+.tab-button.active {
+  color: #ffffff;
+  font-weight: 600;
+  background: transparent;
+}
+.tab-button.active::after {
+  width: 100%;
+  animation: slideIn 300ms ease-out forwards;
+}
+
+/* Icon in tab (if present) inherits color; add gentle motion */
+.tab-button .tab-icon {
+  width: 1.1rem;
+  height: 1.1rem;
+  color: #f2d67b;
+  margin-right: 8px;
+  transition: transform 180ms ease, color 200ms ease;
+}
+.tab-button:hover .tab-icon { transform: translateY(-1px); }
+.tab-button.active .tab-icon { color: #f7e7a8; }
+
+/* Underline animation */
+@keyframes slideIn {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+/* Optional: smooth container sheen (no size change) */
+.tab-container::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(242,214,123,0.25), rgba(242,214,123,0.0) 60%);
+  pointer-events: none;
+}
+
+/* Header hide unchanged below */
+@media (max-width: 768px) {
+  .feed-header { display: none; }
+}

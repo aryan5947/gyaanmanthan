@@ -1,0 +1,199 @@
+.back-btn {
+  background: transparent;
+  border: none;
+  color: #ffc300;
+  font-size: 16px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.back-btn:hover {
+  text-decoration: underline;
+}
+
+
+.post-meta-detail {
+  background: linear-gradient(120deg, #181818 80%, #232323 100%);
+  border-radius: 18px;
+  box-shadow: 0 4px 20px #000a;
+  padding: 20px 24px;
+  transition: box-shadow 0.2s, border 0.13s;
+  position: relative;
+  border: 1.5px solid #262626;
+  width: 100%;
+  max-width: 450px;
+  margin: 20px auto 0 auto;  /* Top margin add kiya hai */
+}
+
+.author-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+
+.author-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2px solid #4da3ff;
+  object-fit: cover;
+}
+
+.author-info h4 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #ffc300;
+  font-weight: 600;  /* थोड़ा bold करके readability बढ़ाई */
+}
+
+.author-info small {
+  color: #999;
+  font-size: 0.9rem;
+}
+
+.post-meta-detail h2 {
+  margin-top: 0.5rem;
+  margin-bottom: 0.7rem;
+  font-size: 1.8rem;  /* Mobile पर बेहतर fit के लिए slightly कम */
+  color: #ececec;
+  line-height: 1.3;
+}
+
+.category {
+  color: #adb5bd;
+  font-size: 1rem;
+  margin-bottom: 1.2rem;
+  font-weight: 500;
+}
+
+.tags {
+  margin-bottom: 1.5rem;
+}
+
+.tag {
+  background: linear-gradient(135deg, #212529 0%, #2a2d31 100%);
+  color: #ffc300;
+  border-radius: 12px;
+  padding: 0.3rem 0.8rem;  /* थोड़ा padding बढ़ाया */
+  font-size: 0.9rem;
+  margin-right: 0.5rem;
+  display: inline-block;
+  margin-bottom: 0.4rem;
+  border: 1px solid #333;
+  transition: transform 0.2s;
+}
+
+.tag:hover {
+  transform: translateY(-1px);  /* Subtle hover effect */
+}
+
+.post-files {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  margin: 15px 0;  /* Top/bottom margin adjust */
+  min-height: 220px;
+  max-height: 440px;
+  width: 100%;
+  overflow: hidden;
+  transition: min-height 0.2s, max-height 0.2s; /* Fallback background */
+}
+
+.post-image {
+  max-width: 96%;
+  max-height: 420px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 12px;
+  display: block;
+  margin: auto;
+  transition: transform 0.3s ease;  /* Smooth scaling */
+}
+
+.post-image:hover {
+  transform: scale(1.02);  /* Subtle zoom on hover */
+}
+
+.post-files video {
+  max-width: 96%;
+  max-height: 420px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 12px;
+  display: block;
+  margin: auto;
+  outline: none;
+}
+
+.stats {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1.2rem;
+  font-size: 1.05rem;
+  color: #ffc300;
+  margin-bottom: 0.8rem;
+  padding: 0.5rem 0;
+}
+
+.stats span {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.post-meta-detail p {
+  margin: 0.2rem 0;
+  color: #ccc;
+}
+
+/* Loading और Error states */
+.post-meta-detail p:last-child {
+  color: #66c266;  /* Status के लिए green */
+  font-weight: 500;
+}
+
+@media (max-width: 700px) {
+  .post-meta-detail {
+    padding: 1rem;
+    max-width: 98vw;
+    margin: 15px auto 0 auto;  /* Mobile पर भी top margin */
+  }
+  
+  .post-meta-detail h2 {
+    font-size: 1.6rem;
+  }
+  
+  .post-files {
+    min-height: 180px;
+    max-height: 320px;
+  }
+  
+  .post-image, .post-files video {
+    max-height: 300px;
+  }
+  
+  .stats {
+    gap: 1rem;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .author-info {
+    gap: 0.8rem;
+  }
+  
+  .author-avatar {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .tag {
+    font-size: 0.85rem;
+    padding: 0.25rem 0.6rem;
+  }
+}

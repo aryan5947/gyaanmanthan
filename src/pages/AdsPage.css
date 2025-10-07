@@ -1,0 +1,257 @@
+.ads-page {
+  max-width: 900px;
+  margin: 32px auto;
+  padding: 24px 16px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 32px 0 rgba(40, 40, 40, 0.08);
+  font-family: "Inter", Arial, sans-serif;
+}
+
+.ads-title {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -1px;
+  margin-bottom: 24px;
+  color: #2d3a4a;
+}
+
+.ad-form {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 36px;
+  box-shadow: 0 1px 6px 0 rgba(160, 160, 160, 0.07);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ad-input {
+  padding: 11px 14px;
+  font-size: 1rem;
+  border: 1px solid #d3dae6;
+  border-radius: 7px;
+  margin-bottom: 0;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.ad-input:focus {
+  border-color: #3b82f6;
+}
+
+.file-upload-label {
+  display: inline-block;
+  padding: 10px 18px;
+  background: #f1f5fd;
+  color: #2563eb;
+  border-radius: 7px;
+  cursor: pointer;
+  font-weight: 500;
+  margin-bottom: 0;
+  transition: background 0.2s;
+}
+
+.file-upload-label:hover {
+  background: #e0eaff;
+}
+
+.preview {
+  margin: 0 0 12px 0;
+}
+
+.preview-list {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.preview-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f3f4f6;
+  border-radius: 8px;
+  padding: 7px 10px;
+}
+
+.preview-image {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+}
+
+.file-info {
+  font-size: 0.98rem;
+  color: #374151;
+}
+
+.remove-file-btn {
+  background: none;
+  border: none;
+  color: #dc2626;
+  font-size: 1.2rem;
+  cursor: pointer;
+  margin-left: 4px;
+  transition: color 0.2s;
+}
+
+.remove-file-btn:hover {
+  color: #991b1b;
+}
+
+.ad-button {
+  padding: 11px 22px;
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  font-weight: 600;
+  font-size: 1.05rem;
+  cursor: pointer;
+  box-shadow: 0 1px 6px 0 rgba(50, 90, 255, 0.10);
+  transition: background 0.2s;
+}
+
+.ad-button:disabled {
+  background: #93c5fd;
+  cursor: not-allowed;
+}
+
+.ad-button:not(:disabled):hover {
+  background: #1e40af;
+}
+
+.ads-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.ad-card {
+  flex: 1 1 270px;
+  min-width: 260px;
+  max-width: 330px;
+  padding: 18px 18px 16px 18px;
+  background: #f5faff;
+  border-radius: 13px;
+  box-shadow: 0 2px 10px 0 rgba(50,90,255,0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.ad-card-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 0 0 3px 0;
+  color: #1d3557;
+}
+
+.ad-card-body {
+  font-size: 1rem;
+  color: #415a77;
+  margin-bottom: 8px;
+}
+
+.ad-card-image {
+  max-width: 100%;
+  max-height: 110px;
+  border-radius: 7px;
+  margin-bottom: 7px;
+  border: 1px solid #dbeafe;
+  background: #fff;
+}
+
+.ad-card-stats {
+  font-size: 0.97rem;
+  color: #64748b;
+  margin-bottom: 7px;
+}
+
+.ad-card-button {
+  padding: 7px 17px;
+  background: #38b6ff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-weight: 500;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.ad-card-button:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.25) inset,
+    0 12px 22px rgba(240, 165, 0, 0.45);
+}
+
+.no-ads {
+  color: #888;
+  font-size: 1.08rem;
+  margin-top: 20px;
+}
+
+.error {
+  color: #dc2626;
+  background: #fde8e8;
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-bottom: 14px;
+  font-size: 1.03rem;
+  font-weight: 500;
+}
+
+.progress-wrapper {
+  background: #e5e7eb;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  height: 17px;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-bar {
+  background: linear-gradient(90deg, #60a5fa, #2563eb);
+  height: 100%;
+  border-radius: 8px;
+  transition: width 0.3s;
+}
+
+.progress-chip {
+  position: absolute;
+  right: 12px;
+  top: 2px;
+  font-size: 0.98rem;
+  color: #1e293b;
+  font-weight: 500;
+}
+
+.status-row {
+  margin-bottom: 10px;
+}
+
+.success-chip {
+  color: #166534;
+  background: #bbf7d0;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.error-chip {
+  color: #dc2626;
+  background: #fde8e8;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+}

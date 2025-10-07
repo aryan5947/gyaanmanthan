@@ -1,0 +1,213 @@
+.trust-block {
+  background: linear-gradient(135deg, #1a1a1a 0%, #232319 100%);
+  border-radius: 14px;
+  padding: 24px 20px 28px;
+  max-width: 280px;
+  color: #f9e7a1;
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  box-shadow: 0 6px 28px #000c, 0 1.5px 10px #d4af3725;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.trust-block__title {
+  font-size: 1.85rem;
+  font-weight: 900;
+  margin-bottom: 14px;
+  color: #ffd700;
+  text-shadow: 0 2px 15px #1a191a80;
+  letter-spacing: 1.1px;
+  user-select: none;
+}
+
+.trust-block__links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.trust-block__links li a {
+  color: #d4af37;
+  font-size: 1.05rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.22s, text-shadow 0.22s;
+}
+
+.trust-block__links li a:hover,
+.trust-block__links li a:focus {
+  color: #ffd700;
+  text-shadow: 0 0 9px #ffd700aa;
+  outline: none;
+}
+
+.trust-block__badge {
+  background: rgba(40, 30, 10, 0.32);
+  border-radius: 12px;
+  padding: 18px 16px;
+  box-shadow: 0 1.5px 8px #d4af3720;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #f3ddb2;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+.trust-block__msme {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffd700;
+  text-shadow: 0 1px 6px #d4af3730;
+}
+
+.trust-block__id {
+  font-style: italic;
+  color: #f0dc9b;
+  letter-spacing: 0.08em;
+}
+
+.trust-block__qr-btn {
+  margin-top: 10px;
+  background: linear-gradient(135deg, #d4af37 0%, #b7982d 100%);
+  box-shadow: 0 3px 12px #d4af3730;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 0;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #191919;
+  cursor: pointer;
+  transition: background 0.28s, box-shadow 0.28s, transform 0.12s;
+  user-select: none;
+}
+
+.trust-block__qr-btn:hover,
+.trust-block__qr-btn:focus {
+  background: linear-gradient(135deg, #ffe066 5%, #c5a832 100%);
+  box-shadow: 0 4px 18px #ffd70045;
+  transform: translateY(-2px);
+  outline: none;
+}
+
+.qr-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1100;
+  padding: 0 12px;
+  box-sizing: border-box;
+}
+
+.qr-modal__content {
+  background: linear-gradient(140deg, #1b1b1b 0%, #2a2a21 100%);
+  border-radius: 18px;
+  max-width: 360px;
+  width: 100%;
+  padding: 28px 24px 32px;
+  box-shadow: 0 6px 30px #000b, 0 1px 12px #d4af372e;
+  color: #ffeaa5;
+  text-align: center;
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  position: relative;
+}
+
+.qr-modal__close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #d4af37;
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.28s;
+}
+
+.qr-modal__close:hover {
+  color: #ffe066;
+}
+
+.qr-modal__content h3 {
+  margin-bottom: 14px;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #ffd700;
+  text-shadow: 0 2px 18px #1a1a1aaa;
+}
+
+.qr-modal__content p {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 8px 0;
+  color: #e6d790;
+}
+
+.qr-modal__content img.qr-modal__image {
+  max-width: 250px;
+  margin: 18px auto 24px;
+  border-radius: 14px;
+  border: 3px solid #d4af37;
+  box-shadow: 0 0 14px #d4af37aa;
+  display: block;
+}
+
+.qr-modal__content a {
+  color: #ffd700;
+  font-weight: 700;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: color 0.23s;
+}
+
+.qr-modal__content a:hover,
+.qr-modal__content a:focus {
+  color: #ffe066;
+  text-decoration: underline;
+  outline: none;
+}
+
+@media (max-width: 680px) {
+  .trust-block {
+    max-width: 95vw;
+    padding: 18px 16px 22px;
+    font-size: 0.94rem;
+  }
+
+  .trust-block__title {
+    font-size: 1.5rem;
+  }
+
+  .trust-block__qr-btn {
+    font-size: 0.9rem;
+    padding: 8px 0;
+  }
+
+  .qr-modal__content {
+    max-width: 90vw;
+    padding: 20px 18px 24px;
+  }
+
+  .qr-modal__content h3 {
+    font-size: 1.3rem;
+  }
+
+  .qr-modal__content img.qr-modal__image {
+    max-width: 180px;
+  }
+
+  .qr-modal__content a {
+    font-size: 0.9rem;
+  }
+}

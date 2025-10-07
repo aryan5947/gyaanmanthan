@@ -1,0 +1,62 @@
+
+/* Main background gradient: black to dark grey */
+.w-full,
+.feed-page-bg,
+body {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #000 0%, #222 100%);
+  color: #fff;
+}
+
+/* Feed Header */
+.feed-header {
+  width: 100%;
+  height: 80px; /* ✅ Fixed height */
+  padding: 16px 0; /* Adjusted to fit within fixed height */
+  text-align: center;
+  background: rgba(10,10,10,0.85);
+  border-bottom: 1px solid #222;
+  font-size: 2rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+  box-sizing: border-box; /* Ensures padding doesn't overflow height */
+}
+
+.feed-title {
+  color: #fff;
+  font-size: 2rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+  line-height: 48px;       /* ✅ Ensures vertical centering within 80px header */
+  margin: 0;                /* ✅ Removes default h2 margin */
+  padding: 0;               /* ✅ Keeps spacing tight */
+  display: inline-block;   /* ✅ Prevents unexpected block-level shifts */
+  vertical-align: middle;  /* ✅ Aligns emoji and text nicely */
+}
+
+.loading {
+  color: #fff;
+  text-align: center;
+  padding: 40px 0;
+  font-size: 1.25rem;
+}
+
+
+
+/* Responsive + scrollbar (optional) */
+@media (max-width: 700px) {
+  .tweet-card, .detail-page, .post-meta-detail {
+    max-width: 98vw;
+    padding: 14px 4vw;
+  }
+  .feed-header { font-size: 1.3rem; }
+}
+
+::-webkit-scrollbar {
+  background: #111;
+  width: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 5px;
+}

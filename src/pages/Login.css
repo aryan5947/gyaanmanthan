@@ -1,0 +1,173 @@
+/* ===== Base Layout ===== */
+.login {
+  min-height: 100vh;
+  background: linear-gradient(120deg, #1a1a1a 0%, #232323 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ===== Headings ===== */
+.login__title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #ffd700;
+  margin-bottom: 0.25rem;
+  text-align: center;
+  text-shadow: 0 2px 12px #1a1a1a80;
+}
+.login__subtitle {
+  color: #f6edca;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* ===== Form Container ===== */
+.login__form {
+  background: linear-gradient(120deg, #191919 64%, #232019 100%);
+  padding: 2rem;
+  border-radius: 14px;
+  box-shadow: 0 6px 32px #0009, 0 1.5px 9px #d4af3725;
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  border: 1.3px solid #232319;
+}
+
+/* ===== Fields ===== */
+fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+legend {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #ffe18e;
+}
+
+/* ===== Inputs ===== */
+.login__form input {
+  border: 1px solid #44402c;
+  background: #23231d;
+  color: #ffd700;
+  border-radius: 8px;
+  padding: 0.7rem 1rem;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+.login__form input:focus {
+  border-color: #ffd700;
+  box-shadow: 0 0 0 3px #ffd70033;
+}
+
+/* ===== Button ===== */
+.btn {
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background 0.18s, transform 0.1s;
+  width: 100%;
+}
+.btn--primary {
+  background: linear-gradient(120deg, #ffd700 65%, #e6c544 100%);
+  color: #191919;
+  box-shadow: 0 2px 8px #d4af3725;
+  font-weight: 700;
+}
+.btn--primary:hover {
+  background: linear-gradient(120deg, #ffe67f 65%, #ffd700 100%);
+  color: #191919;
+  transform: translateY(-1px);
+}
+
+/* ===== Alt Text ===== */
+.login__alt {
+  text-align: center;
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+  color: #d3c48e;
+}
+.login__alt a {
+  color: #ffd700;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.14s;
+}
+.login__alt a:hover {
+  text-decoration: underline;
+  color: #eccb2a;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* dark transparent overlay */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: linear-gradient(120deg, #1a1a1a 0%, #232323 100%); /* black gradient similar to login */
+  padding: 2rem;
+  border-radius: 14px;
+  box-shadow: 0 6px 32px #0009, 0 1.5px 9px #d4af3725; /* subtle golden shadow */
+  max-width: 400px;
+  color: #ffd700; /* golden text */
+  text-align: center;
+  font-family: 'Inter', sans-serif;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.modal-actions button {
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  background: linear-gradient(120deg, #ffd700 65%, #e6c544 100%);
+  color: #191919;
+  box-shadow: 0 2px 8px #d4af3725;
+  transition: background 0.18s, transform 0.1s;
+  width: 48%;
+}
+
+.modal-actions button:hover {
+  background: linear-gradient(120deg, #ffe67f 65%, #ffd700 100%);
+  color: #191919;
+  transform: translateY(-1px);
+}
+
+
+/* ===== Responsive ===== */
+@media (max-width: 480px) {
+  .login__form {
+    padding: 1.5rem;
+    gap: 1rem;
+  }
+  .login__title {
+    font-size: 1.6rem;
+  }
+}

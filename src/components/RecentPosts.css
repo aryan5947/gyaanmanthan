@@ -1,0 +1,16 @@
+.recent-posts {
+  margin-bottom: 2rem;
+}
+
+.post-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.post-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 12px #00ffe0;
+}

@@ -1,0 +1,8 @@
+.ad-slot {
+  display: block;
+  width: 100%;
+  min-width: 250px;   /* ✅ fluid ads के लिए जरूरी */
+  min-height: 100px;  /* ✅ ताकि blank error न आए */
+  margin: 12px 0;     /* ऊपर-नीचे थोड़ा gap */
+  text-align: center; /* center alignment */
+}
