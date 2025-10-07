@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, CSSProperties } from "react";
 
+// --- Types ---
 interface CustomText {
   text: string;
   bold?: boolean;
@@ -12,7 +13,7 @@ interface CustomText {
   fontFamily?: string;
 }
 
-// Utility to normalize YouTube URLs
+// --- Utility: Normalize YouTube URLs ---
 const getYoutubeEmbedUrl = (url: string): string | null => {
   try {
     const parsed = new URL(url);
@@ -48,17 +49,14 @@ const getYoutubeEmbedUrl = (url: string): string | null => {
   }
 };
 
-// YouTubeEmbed with auto replay + improved fallback (thumbnail + link)
+// --- YouTubeEmbed: 100% Crash-proof (iframe only, NO API) ---
 const YouTubeEmbed: React.FC<{ url: string; height?: number; align?: string }> = ({
   url,
   height,
   align,
 }) => {
-  const [fallback, setFallback] = useState(false);
-  const playerRef = useRef<HTMLDivElement>(null);
   const [videoId, setVideoId] = useState<string | null>(null);
 
-  // Extract videoId
   useEffect(() => {
     try {
       const parsed = new URL(url);
@@ -73,53 +71,11 @@ const YouTubeEmbed: React.FC<{ url: string; height?: number; align?: string }> =
     }
   }, [url]);
 
-  // Load YouTube IFrame API + attach player
-  useEffect(() => {
-    if (!videoId) return;
-
-    // Load script if not already loaded
-    if (!(window as any).YT) {
-      const tag = document.createElement("script");
-      tag.src = "https://www.youtube.com/iframe_api";
-      document.body.appendChild(tag);
-    }
-
-    (window as any).onYouTubeIframeAPIReady = () => {
-      const el = document.getElementById(`yt-player-${videoId}`);
-      if (!el) return;
-
-      try {
-        new (window as any).YT.Player(`yt-player-${videoId}`, {
-          videoId,
-          events: {
-            onStateChange: (event: any) => {
-              if (event.data === 0 || event.data === -1) {
-                setFallback(true);
-              }
-            },
-            onError: () => setFallback(true),
-          },
-        });
-      } catch (e) {
-        console.error("YT Player init error:", e);
-        setFallback(true);
-      }
-    };
-
-    return () => {
-      try {
-        (playerRef.current as any)?.destroy?.();
-      } catch (e) {
-        console.warn("YT cleanup error:", e);
-      }
-    };
-  }, [videoId]);
-
   if (!videoId) return null;
 
-  const isLive = url.includes("/live/");
-  const replayUrl = `https://www.youtube.com/embed/${videoId}`;
+  const embedUrl = getYoutubeEmbedUrl(url) || `https://www.youtube.com/embed/${videoId}`;
   const youtubeLink = `https://www.youtube.com/watch?v=${videoId}`;
+  const isLive = url.includes("/live/");
 
   return (
     <div
@@ -130,52 +86,30 @@ const YouTubeEmbed: React.FC<{ url: string; height?: number; align?: string }> =
         position: "relative",
       }}
     >
-      {!fallback && isLive ? (
-        <div
-          id={`yt-player-${videoId}`}
-          ref={playerRef}
-          style={{ width: "100%", height: height || 400 }}
-        />
-      ) : !fallback ? (
-        <iframe
-          width="100%"
-          height={height || 400}
-          src={replayUrl}
-          title="YouTube replay"
-          frameBorder="0"
-          style={{ borderRadius: "6px", display: "block" }}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-          onError={() => setFallback(true)}
-        ></iframe>
-      ) : (
-        <a
-          href={youtubeLink}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            height: height || 200,
-            background: "#111",
-            color: "#fff",
-            borderRadius: "6px",
-            textDecoration: "none",
-            fontWeight: "bold",
-          }}
-        >
-          <img
-            src={`https://img.youtube.com/vi/${videoId}/hqdefault.jpg`}
-            alt="YouTube thumbnail"
-            style={{ maxHeight: 140, borderRadius: 6, marginBottom: 8 }}
-          />
-          ▶️ Watch on YouTube
-        </a>
-      )}
+      <iframe
+        width="100%"
+        height={height || 400}
+        src={embedUrl}
+        title="YouTube replay"
+        frameBorder="0"
+        style={{ borderRadius: "6px", display: "block" }}
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+        sandbox="allow-scripts allow-same-origin allow-presentation"
+        onError={(e) => {
+          // Hide broken iframe, show fallback thumbnail
+          const parent = (e.target as HTMLIFrameElement).parentElement;
+          if (parent) parent.innerHTML = `
+            <a href="${youtubeLink}" target="_blank" rel="noopener noreferrer"
+              style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:${height || 200}px;background:#111;color:#fff;border-radius:6px;text-decoration:none;font-weight:bold;">
+              <img src="https://img.youtube.com/vi/${videoId}/hqdefault.jpg" alt="YouTube thumbnail" style="max-height:140px;border-radius:6px;margin-bottom:8px;" />
+              ▶️ Watch on YouTube
+            </a>
+          `;
+        }}
+      ></iframe>
 
-      {isLive && !fallback && (
+      {isLive && (
         <div
           style={{
             position: "absolute",
@@ -196,6 +130,7 @@ const YouTubeEmbed: React.FC<{ url: string; height?: number; align?: string }> =
   );
 };
 
+// --- Main: Robust Renderer ---
 export function renderContent(content: any[]) {
   if (!Array.isArray(content)) return null;
 
@@ -216,6 +151,8 @@ export function renderContent(content: any[]) {
             backgroundColor: child.highlight,
             fontSize: child.fontSize,
             fontFamily: child.fontFamily,
+            wordBreak: "break-word",
+            lineHeight: 1.5,
           }}
         >
           {node}
@@ -275,6 +212,11 @@ export function renderContent(content: any[]) {
               style={{
                 maxWidth: block.width || 400,
                 height: block.height || "auto",
+                borderRadius: 6,
+                boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+              }}
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = "none";
               }}
             />
           </div>
@@ -289,6 +231,11 @@ export function renderContent(content: any[]) {
               style={{
                 maxWidth: block.width || 400,
                 height: block.height || "auto",
+                borderRadius: 6,
+                background: "#000",
+              }}
+              onError={(e) => {
+                (e.target as HTMLVideoElement).style.display = "none";
               }}
             />
           </div>
@@ -304,7 +251,7 @@ export function renderContent(content: any[]) {
           />
         );
 
-           case "file":
+      case "file":
         return (
           <div
             key={idx}
@@ -315,8 +262,21 @@ export function renderContent(content: any[]) {
               download
               target="_blank"
               rel="noopener noreferrer"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                fontWeight: 500,
+                background: "#f3f3f3",
+                borderRadius: 6,
+                padding: "5px 12px",
+                textDecoration: "none",
+                color: "#333",
+              }}
             >
-              📄 {block.fileName || "Download file"}
+              <span role="img" aria-label="file" style={{ marginRight: 6 }}>
+                📄
+              </span>
+              {block.fileName || "Download file"}
             </a>
           </div>
         );

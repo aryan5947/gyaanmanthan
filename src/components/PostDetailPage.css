@@ -450,7 +450,7 @@
 
 /* Ads wrapper should match the main content container */
 .ads-banner {
-  width: 98%;            /* follow parent container width */  /* [memory:8] */
+  width: 95%;            /* follow parent container width */  /* [memory:8] */
   max-width: 650px;       /* same as .posts-container max-width */  /* [memory:8] */
   margin: 0 auto;         /* center like posts */  /* [memory:8] */
   padding: 12px 15px;     /* same horizontal padding as posts-container */  /* [memory:8] */
