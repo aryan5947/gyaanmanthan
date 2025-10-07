@@ -258,3 +258,163 @@
   .avatarSection { margin-top: -28px; }
   .page { padding: 12px 12px 48px; }
 }
+
+/* Base: create a stacking context for banner and avatar */
+.bannerWrap {
+  position: relative; /* already set */ /* [memory:7] */
+}
+
+/* Avatar row becomes positioned block under banner */
+.avatarSection {
+  position: relative; /* anchor for spacing when not overlapping */ /* [memory:7] */
+  align-items: center;
+  gap: 16px;
+  padding-left: 16px;
+  z-index: 2; /* above form card shadows */ /* [memory:7] */
+}
+
+/* Make avatar circle size fluid */
+.avatarCircle {
+  width: clamp(84px, 22vw, 112px); /* responsive size */ /* [memory:7] */
+  height: clamp(84px, 22vw, 112px); /* [memory:7] */
+}
+
+/* Place the avatar overlapping the banner on wider screens */
+@media (min-width: 721px) {
+  .avatarSection {
+    margin-top: -48px; /* pull up over banner bottom edge */ /* [memory:7] */
+    padding-left: 24px; /* [memory:7] */
+  }
+}
+
+/* Mobile layout: stack safely, no overlap */
+@media (max-width: 720px) {
+  /* Reduce banner height for phones */
+  .bannerWrap {
+    height: clamp(150px, 34vh, 200px); /* [memory:7] */
+    border-radius: 14px; /* [memory:7] */
+  }
+
+  /* Keep avatar visually attached to banner but not on top of text */
+  .avatarSection {
+    display: flex;
+    gap: 12px;
+    padding: 0 8px; /* tighter gutter */ /* [memory:7] */
+    margin-top: -32px; /* subtle overlap look */ /* [memory:7] */
+  }
+
+  /* Ensure avatar sits in front of banner and not behind */
+  .avatarCircle {
+    z-index: 3; /* [memory:7] */
+    border-width: 4px; /* slimmer ring on mobile */ /* [memory:7] */
+  }
+
+  /* If overlap causes issues, switch to clean stack */
+  .page.hasSafeStack .avatarSection {
+    margin-top: 10px; /* cancel the negative margin when needed */ /* [memory:7] */
+  }
+
+  /* Title and header compact */
+  .title { font-size: 1.45rem; } /* [memory:7] */
+
+  /* Grid already 1 column; add spacing from banner+avatar before form card */
+  .formCard { margin-top: 16px; } /* [memory:7] */
+}
+
+/* Ultra small devices */
+@media (max-width: 380px) {
+  .avatarCircle {
+    width: 78px; height: 78px; /* [memory:7] */
+  }
+  .avatarSection { margin-top: -24px; } /* [memory:7] */
+}
+
+/* Overlay stays centered on all screens */
+.cropperModal {
+  position: fixed;
+  inset: 0;
+  display: grid;              /* center reliably */ /* [memory:7] */
+  place-items: center;        /* [memory:7] */
+  background: rgba(0,0,0,0.75);
+  z-index: 1000;
+  padding:
+    max(10px, env(safe-area-inset-top))
+    max(10px, env(safe-area-inset-right))
+    max(12px, env(safe-area-inset-bottom))
+    max(10px, env(safe-area-inset-left)); /* [memory:7] */
+}
+
+/* Base cropper container with fluid sizing */
+.cropperContainer {
+  position: relative;
+  width: min(94vw, 600px);    /* cap width for desktop too */ /* [memory:7] */
+  height: min(70svh, 520px);  /* responsive height */ /* [memory:7] */
+  background:
+    radial-gradient(120% 120% at 0% 0%, rgba(242,214,123,0.12), transparent 50%),
+    #0f1116;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(242,214,123,0.25);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.7);
+}
+
+/* Ensure inner cropper canvas fits container */
+.cropperContainer > div {
+  width: 100%;
+  height: 100%;
+}
+
+/* Actions: sticky footer inside modal for mobile ergonomics */
+.cropperActions {
+  width: min(94vw, 600px);
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.cropperActions button {
+  flex: 1;                    /* large tappable buttons */ /* [memory:7] */
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+/* Mobile-specific tweaks */
+@media (max-width: 720px) {
+  .cropperContainer {
+    width: 96vw;              /* edge-to-edge comfort */ /* [memory:7] */
+    height: min(68svh, 460px);
+    border-radius: 12px;
+  }
+
+  .cropperActions {
+    width: 96vw;
+    position: sticky;         /* keep visible above keyboard */ /* [memory:7] */
+    bottom: 0;
+    margin: 10px 0 0;
+    z-index: 1001;
+  }
+
+  /* If action bar overlapping content, add safe class to switch to fixed footer */
+  .cropperModal.hasFixedActions .cropperActions {
+    position: fixed;          /* fallback: fixed footer */ /* [memory:7] */
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: max(10px, env(safe-area-inset-bottom));
+  }
+}
+
+/* Very small phones */
+@media (max-width: 380px) {
+  .cropperContainer { height: min(64svh, 420px); } /* [memory:7] */
+  .cropperActions button { font-size: 0.9rem; padding: 11px 12px; } /* [memory:7] */
+}
+
+/* Reduce motion users */
+@media (prefers-reduced-motion: reduce) {
+  .cropperActions button { transition: none; } /* [memory:7] */
+}

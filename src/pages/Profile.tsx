@@ -452,7 +452,7 @@ function PostList({
       const url =
         tabType === "postMeta"
           ? `${import.meta.env.VITE_API_URL}/api/post-meta/${id}`
-          : `${import.meta.env.VITE_API_URL}/api/post/${id}`;
+          : `${import.meta.env.VITE_API_URL}/api/posts/${id}`;
       const res = await fetch(url, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
@@ -546,37 +546,111 @@ function PostList({
     </div>
   );
 }
-
-
 // ---------- UserList ----------
 function UserList({ list, type }: { list: any[]; type: string }) {
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+  const [following, setFollowing] = useState<Record<string, boolean>>({});
+
+  // ✅ Mount पर summary से following IDs लाओ
+  useEffect(() => {
+    const fetchFollowing = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/user/summary`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+
+        if (Array.isArray(data.following)) {
+          const map: Record<string, boolean> = {};
+          data.following.forEach((f: any) => {
+            map[f.following.toString()] = true;
+          });
+          setFollowing(map);
+        }
+      } catch (err) {
+        console.error("Error fetching following summary:", err);
+      }
+    };
+
+    if (token) fetchFollowing();
+  }, [token]);
+
+  const toggleFollow = async (id: string) => {
+    try {
+      const isCurrentlyFollowing = following[id];
+      const endpoint = isCurrentlyFollowing ? "unfollow" : "follow";
+
+      // ✅ सही payload key
+      const body = isCurrentlyFollowing
+        ? { userIdToUnfollow: id }
+        : { userIdToFollow: id };
+
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/user/${endpoint}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(body),
+        }
+      );
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.message || "Request failed");
+      }
+
+      // ✅ Local state update
+      setFollowing((prev) => ({
+        ...prev,
+        [id]: !isCurrentlyFollowing,
+      }));
+    } catch (err) {
+      console.error("Follow/Unfollow error:", err);
+    }
+  };
+
   if (!list.length) return <p>No {type} yet.</p>;
 
   return (
     <ul className={styles.listContainer}>
       {list.map((item, i) => (
-        <li
-          key={i}
-          className={styles.listItem}
-          onClick={() => {
-            if (item._id) {
-              navigate(`/user/${item._id}`);
-            }
-          }}
-        >
-          <div className={styles.listAvatar}>
-            {item.avatarUrl && <img src={item.avatarUrl} alt={item.name || "User"} />}
+        <li key={i} className={styles.listItem}>
+          <div
+            className={styles.listAvatar}
+            onClick={() => item._id && navigate(`/user/${item._id}`)}
+          >
+            {item.avatarUrl && (
+              <img src={item.avatarUrl} alt={item.name || "User"} />
+            )}
           </div>
           <div className={styles.listInfo}>
             <strong>{item.name || `${type} ${i + 1}`}</strong>
             {item.username && <span>@{item.username}</span>}
           </div>
+
+          {/* Follow / Unfollow Button */}
+          {item._id && (
+            <button
+              className={styles.followBtn}
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleFollow(item._id);
+              }}
+            >
+              {following[item._id] ? "Unfollow" : "Follow"}
+            </button>
+          )}
         </li>
       ))}
     </ul>
   );
 }
+
 
 // ---------- NotificationList ----------
 function NotificationList({ notifications }: { notifications: any[] }) {

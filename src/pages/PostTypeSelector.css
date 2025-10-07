@@ -90,9 +90,9 @@
     background: linear-gradient(120deg, #191919 0%, #232018 100%);
     border-radius: 10px;
     padding: 1rem 0.7rem; /* मोबाइल के लिए हल्के गैप्स */
-    width: 96vw; /* लगभग पूरी चौड़ाई, साइड स्पेस भी */
-    max-width: 99vw;
+    width: 90vw; /* लगभग पूरी चौड़ाई, साइड स्पेस भी */
     position: relative;
+    margin-right: 12%;
     box-shadow: 0 2px 12px rgba(212,175,55,0.14); /* हल्का शैडो */
     border: 1.5px solid #d4af37;
     background-size: cover;

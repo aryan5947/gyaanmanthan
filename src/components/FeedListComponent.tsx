@@ -1064,7 +1064,7 @@ export default function FeedPage() {
                       {/* Views */}
                       <button className="icon-btn" disabled>
                         <ChartBarIcon className="icon" />
-                        <span>{post.stats?.views ?? 0}</span>
+                        <span className="count">{post.stats?.views ?? 0}</span>
                       </button>
 
                       {/* Report */}

@@ -829,6 +829,78 @@ body, html {
     0 12px 30px rgba(212,175,55,0.3),
     var(--shadow-strong);
 }
+/* Follow button base */
+.followBtn {
+  --gold-1: #f2d67b;            /* [memory:7] */
+  --gold-2: #ffd700;            /* [memory:7] */
+  --ink: #0c0d10;               /* [memory:7] */
+  --ring: rgba(242,214,123,0.45); /* [memory:7] */
+
+  display: inline-flex;
+  align-items: center;
+  margin-left: auto;
+  justify-content: center;
+  gap: 8px;
+
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--ring);
+  background: linear-gradient(90deg, var(--gold-2), var(--gold-1));
+  color: var(--ink);
+  font-weight: 800;
+  font-size: 10.5px;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+
+  transition: transform .12s ease, filter .2s ease, box-shadow .2s ease, background .2s ease;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.28) inset,
+    0 10px 28px rgba(242,214,123,0.35); /* [memory:7] */
+}
+
+/* Hover/active */
+.followBtn:hover { filter: brightness(1.05); box-shadow: 0 12px 34px rgba(242,214,123,0.45); } /* [memory:7] */
+.followBtn:active { transform: translateY(1px); } /* [memory:7] */
+
+/* Focus ring */
+.followBtn:focus-visible {
+  outline: 3px solid rgba(242,214,123,0.5);
+  outline-offset: 2px; /* [memory:7] */
+}
+
+/* Disabled */
+.followBtn:disabled { opacity: .6; cursor: not-allowed; box-shadow: none; } /* [memory:7] */
+
+/* Unfollow state (use data-state="following" OR a .isFollowing class) */
+.followBtn[data-state="following"],
+.followBtn.isFollowing {
+  background: linear-gradient(180deg, #1b1d24, #14161c);  /* dark pill */ /* [memory:7] */
+  color: #d9d9e0;
+  border-color: rgba(255,255,255,0.08);
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.35) inset,
+    0 6px 18px rgba(0,0,0,0.45); /* [memory:7] */
+}
+
+.followBtn[data-state="following"]:hover,
+.followBtn.isFollowing:hover {
+  background: linear-gradient(180deg, #20232b, #171a20);
+  color: #f2d67b; /* hint of gold on hover */ /* [memory:7] */
+}
+
+/* Small variant for tight lists */
+@media (max-width: 600px) {
+  .followBtn {
+    height: 32px;
+    padding: 0 12px;
+    font-size: 12.5px;
+    box-shadow:
+      0 0 0 1px rgba(0,0,0,0.26) inset,
+      0 8px 22px rgba(242,214,123,0.3); /* [memory:7] */
+  }
+}
+
 
 /* Mobile responsive */
 @media (max-width: 640px) {
@@ -973,9 +1045,9 @@ body, html {
     padding: 3.2rem 0.6rem 0.6rem 0.6rem;
   }
   .userInfoCard .avatarWrapper {
-    width: 80px;
-    height: 80px;
-    top: -32px;
+    width: 130px;
+    height: 130px;
+    top: -80px;
     border-width: 1px;
   }
   .statsRow,

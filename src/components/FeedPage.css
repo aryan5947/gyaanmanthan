@@ -43,13 +43,14 @@
   background: linear-gradient(120deg, #181818 80%, #232323 100%);
   border-radius: 18px;
   box-shadow: 0 4px 20px #000a;
-  padding: 20px 24px;       /* padding thodi badhai for spacious feel */
+  padding: 20px 24px;       /* inner spacing */
   transition: box-shadow 0.2s, border 0.13s;
   position: relative;
-  border: 1.5px solid #262626;
+  border: 1.5px solid #d4af37;
   width: 100%;
-  max-width: 450px;         /* width ko thoda bada kiya */
-  margin: 0 auto;  
+  max-width: 450px;
+  margin: 0 auto;
+  box-sizing: border-box;   /* ✅ padding ko width ke andar count kare */
 }
 
 .tweet-card:hover {
@@ -338,11 +339,33 @@
 
 .tweet-actions {
   display: flex;
-  justify-content: space-between;        /* Horizontally center icons */
-  align-items: center;               /* Vertically center icons */
-  padding: 16px 0px 16px 8px;
+  justify-content: space-between;
+  align-items: center;
   width: 100%;
+  padding: 12px 0;
+  box-sizing: border-box;
+  flex-wrap: nowrap;   /* ek hi line */
+  overflow: hidden;
+  gap: 12px;
 }
+
+.tweet-actions .action {
+  display: flex;
+  align-items: center;
+  gap: 6px;            /* icon aur count ke beech spacing */
+  flex: 0 0 auto;      /* ✅ apni natural width rakhe */
+}
+
+.tweet-actions .action i {
+  font-size: 20px;     /* ✅ sab icons same size */
+  flex-shrink: 0;      /* ✅ icon kabhi chhota na ho */
+}
+
+.tweet-actions .action span {
+  font-size: 14px;     /* ✅ count text ka apna size */
+  white-space: nowrap; /* ✅ wrap na ho */
+}
+
 
 
 
@@ -808,7 +831,7 @@
   box-shadow: 0 6px 24px #000a;
   padding: 24px 28px;
   position: relative;
-  border: 2px solid #2e2e2e;
+  border: 2px solid #d4af37;
   width: 100%;              /* ✅ full container width */
   max-width: none;          /* ✅ remove fixed max-width */
   margin: 0;                /* ✅ remove auto centering */
@@ -846,6 +869,19 @@
     height: 24px;
     display: block;
   }
+
+ .count {
+  font-size: 0.8rem;
+  color: #aaa;
+
+  /* Prevent breaking */
+  white-space: nowrap;      /* ek hi line me rakhega */
+  overflow: hidden;         /* agar bahut lamba ho to cut karega */
+  text-overflow: ellipsis;  /* ... dikhayega agar overflow ho */
+  display: inline-block;    /* ellipsis ke liye zaroori */
+  max-width: 100%;          /* parent ke andar hi rahe */
+}
+
 
   .tweet-card:hover {
     box-shadow: 0 8px 32px #312e2766;
@@ -954,7 +990,7 @@
   }
 
   .tweet-actions {
-    gap: 10px;
+    gap: 5px;
   }
 
   .tweet-actions button {
