@@ -2,15 +2,19 @@ import { useEffect } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import ErrorBoundary from "./components/ErrorBoundary"; 
 import AdsPage from "./pages/AdsPage";
-
 import Layout from "./components/Layout";
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import Create from "./pages/Create";
+import StatusTextCreate from "./components/StatusTextCreate";
+import StatusMediaCreate from "./components/StatusMediaCreate";
 import FeedPage from "./pages/FeedPage";
 import Profile from "./pages/Profile";
 import UserProfile from "./pages/UserProfile";
 import EditProfile from "./pages/EditProfile";
+import StoryViewPage from "./pages/StoryViewPage";
+import StatusCreatePage from "./components/StatusCreatePage";
+import StatusFeed from "./components/StatusFeed"; 
 import EditPostPage from "./pages/EditPostPage";
 import Login from "./pages/Login";
 import Privacy from "./components/Privacy";
@@ -41,6 +45,9 @@ import LoginModal from "./components/LoginModal";
 
 // ✅ Auth check hook
 import { useAuthCheck } from "./hooks/useAuthCheck";
+
+// ✅ Global Mention Layer
+import GlobalMentionLayer from "./components/mentions/GlobalMentionLayer";
 
 export default function App() {
   const navigate = useNavigate();
@@ -74,10 +81,23 @@ export default function App() {
           <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/about" element={<About />} />
           <Route path="/privacy" element={<Privacy />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/create-status" element={<StatusCreatePage />} />
+          <Route path="/story/:userId" element={<StoryViewPage />} />
           <Route path="/disclaimer" element={<Disclaimer />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/ads" element={<AdsPage />} />
           <Route path="/user/:id" element={<UserProfile />} />
+          <Route path="/create-text-status" element={ 
+            <ProtectedRoute>
+              <StatusTextCreate />
+            </ProtectedRoute>
+          } />
+          <Route path="/create-media-status" element={
+            <ProtectedRoute>
+              <StatusMediaCreate />
+            </ProtectedRoute>
+          } />
 
           {/* PostMeta Routes */}
           <Route path="/post-meta/feed" element={<PostMetaFeed />} />
@@ -131,10 +151,16 @@ export default function App() {
               <EditProfile />
             </ProtectedRoute>
           } />
+
+          {/* ✅ Status Feed Route */}
+          <Route path="/statuses" element={<StatusFeed userId={"demo-user-id"} />} />
         </Route>
       </Routes>
 
-      {/* 🔥 Global Login Modal (always mounted) */}
+      {/* 🔥 Global Mention Layer (always mounted) */}
+      <GlobalMentionLayer />
+
+      {/* 🔥 Global Login Modal */}
       <LoginModal />
     </ErrorBoundary>
   );

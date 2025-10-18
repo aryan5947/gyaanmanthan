@@ -11,7 +11,7 @@ export default function FeedPage() {
   return (
     <div className="w-full h-full flex flex-col">
       <header className="feed-header">
-        <h2>📚 Gyaan Feed</h2>
+        <h2 className="feed-title">📚 Gyaan Feed</h2>
       </header>
 
       {/* Tabs */}

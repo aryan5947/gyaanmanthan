@@ -338,46 +338,6 @@ export default function CreatePost({ postFormat }: CreatePostProps) {
           </div>
         </form>
       </div>
-
-      {showPublicPreview && (
-        <div className="public-preview-modal">
-          <div className="public-preview-content">
-            <button
-              className="modal-close-icon"
-              onClick={() => setShowPublicPreview(false)}
-              title="Close Preview"
-            >
-              ✖
-            </button>
-            {previews.map((src, idx) => (
-              <img key={idx} src={src} alt={`Preview ${idx}`} />
-            ))}
-            <h2>{title}</h2>
-            <p>
-              <strong>By:</strong> {userName}
-            </p>
-            <p>
-              <strong>Category:</strong> {category}
-            </p>
-            <p>
-              <strong>Tags:</strong> {tags}
-            </p>
-            <p>{description}</p>
-            <div className="public-preview-text">{content}</div>
-            <div className="post-actions">
-              <button>👍 Like</button>
-              <button>🔗 Share</button>
-              <button>➕ Follow</button>
-            </div>
-            <button
-              className="close-preview-btn"
-              onClick={() => setShowPublicPreview(false)}
-            >
-              Close Preview
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

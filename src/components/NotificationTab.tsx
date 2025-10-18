@@ -3,24 +3,27 @@ import { useNavigate } from "react-router-dom";
 import "./NotificationTab.css";
 
 interface Notification {
-  _id: string;
-  type: string;
+  _id: string;                     // notification id
+  type: string;                    // like | save | report | mention | ...
   message: string;
   createdAt: string;
   isRead: boolean;
-  relatedPostMeta?: string;
+  relatedPostMeta?: string;        // for report/view
+  relatedMention?: string;         // mention id (for accept/reject)
+  mentionId?: string;              // alias support if API uses different key
 }
 
 const NotificationTab: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
+  const [actingId, setActingId] = useState<string | null>(null); // per-item action loader
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchAllNotifications = async () => {
       try {
-        const headers = { Authorization: `Bearer ${token}` };
+        const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
 
         // Parallel fetch for all three sources
         const [notifRes, postReportRes, postMetaReportRes] = await Promise.all([
@@ -43,6 +46,19 @@ const NotificationTab: React.FC = () => {
           createdAt: n.createdAt,
           isRead: n.isRead,
           relatedPostMeta: n.relatedPostMeta,
+          // Try common keys so we can pick up the mention id
+          relatedMention:
+            n.relatedMention ||
+            n.mentionId ||
+            n.payload?.mentionId ||
+            n.meta?.mentionId ||
+            undefined,
+          mentionId:
+            n.mentionId ||
+            n.relatedMention ||
+            n.payload?.mentionId ||
+            n.meta?.mentionId ||
+            undefined,
         }));
 
         const postReports: Notification[] = (postReportData.reports || []).map((r: any) => ({
@@ -85,7 +101,7 @@ const NotificationTab: React.FC = () => {
         `${import.meta.env.VITE_API_URL}/api/notifications/${id}/read`,
         {
           method: "PATCH",
-          headers: { Authorization: `Bearer ${token}` },
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
         }
       );
       if (res.ok) {
@@ -104,7 +120,7 @@ const NotificationTab: React.FC = () => {
         `${import.meta.env.VITE_API_URL}/api/notifications/read-all`,
         {
           method: "PATCH",
-          headers: { Authorization: `Bearer ${token}` },
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
         }
       );
       if (res.ok) {
@@ -115,47 +131,46 @@ const NotificationTab: React.FC = () => {
     }
   };
 
-  // ✅ Accept mention
-  const acceptMention = async (id: string) => {
-    try {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/mentions/${id}/accept`,
-        {
-          method: "PATCH",
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      if (res.ok) {
-        setNotifications((prev) =>
-          prev.map((n) =>
-            n._id === id ? { ...n, isRead: true, type: "mention-accepted" } : n
-          )
-        );
-      }
-    } catch (err) {
-      console.error("Failed to accept mention:", err);
+  // ---- Mention actions ----
+  const doMentionAction = async (
+    notifId: string,
+    mentionId: string | undefined,
+    action: "accept" | "reject"
+  ) => {
+    if (!mentionId) {
+      alert("Mention link not found on this notification. Please update backend to include relatedMention.");
+      return;
     }
-  };
-
-  // ✅ Reject mention
-  const rejectMention = async (id: string) => {
+    setActingId(notifId);
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/mentions/${id}/reject`,
+        `${import.meta.env.VITE_API_URL}/api/mentions/${mentionId}/${action}`,
         {
           method: "PATCH",
-          headers: { Authorization: `Bearer ${token}` },
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
         }
       );
       if (res.ok) {
         setNotifications((prev) =>
           prev.map((n) =>
-            n._id === id ? { ...n, isRead: true, type: "mention-rejected" } : n
+            n._id === notifId
+              ? {
+                  ...n,
+                  isRead: true,
+                  type: action === "accept" ? "mention-accepted" : "mention-rejected",
+                }
+              : n
           )
         );
+      } else {
+        const data = await res.json().catch(() => ({}));
+        alert(data?.message || `Failed to ${action} mention`);
       }
     } catch (err) {
-      console.error("Failed to reject mention:", err);
+      console.error(`Failed to ${action} mention:`, err);
+      alert(`Network error while trying to ${action} mention`);
+    } finally {
+      setActingId(null);
     }
   };
 
@@ -174,71 +189,83 @@ const NotificationTab: React.FC = () => {
     <div className="notification-tab">
       <h3 className="notification-tab__header">
         Your Notifications
-        <button
-          className="notification-tab__mark-all-btn"
-          onClick={markAllAsRead}
-        >
+        <button className="notification-tab__mark-all-btn" onClick={markAllAsRead}>
           Mark all as read
         </button>
       </h3>
 
       <ul className="notification-tab__list">
-        {notifications.map((n) => (
-          <li
-            key={n._id}
-            className={`notification-tab__item ${n.isRead ? "read" : "unread"}`}
-          >
-            <div className="notification-tab__type">
-              <strong>
-                {getIcon(n.type)} {n.type.toUpperCase()}
-              </strong>
-              {!n.isRead && <span className="notification-tab__badge" />}
-            </div>
+        {notifications.map((n) => {
+          const mentionId = n.relatedMention || n.mentionId; // normalize
+          const isActing = actingId === n._id;
 
-            <p className="notification-tab__message">{n.message}</p>
-            <small className="notification-tab__timestamp">
-              {new Date(n.createdAt).toLocaleString()}
-            </small>
+          return (
+            <li
+              key={n._id}
+              className={`notification-tab__item ${n.isRead ? "read" : "unread"}`}
+            >
+              <div className="notification-tab__type">
+                <strong>
+                  {getIcon(n.type)} {n.type.toUpperCase()}
+                </strong>
+                {!n.isRead && <span className="notification-tab__badge" />}
+              </div>
 
-            <div className="notification-tab__actions">
-              {!n.isRead && (
-                <button
-                  className="notification-tab__mark-btn"
-                  onClick={() => markAsRead(n._id)}
-                >
-                  Mark as read
-                </button>
-              )}
+              <p className="notification-tab__message">{n.message}</p>
+              <small className="notification-tab__timestamp">
+                {new Date(n.createdAt).toLocaleString()}
+              </small>
 
-              {n.type === "report" && (
-                <button
-                  className="notification-tab__view-btn"
-                  onClick={() => viewPost(n.relatedPostMeta)}
-                >
-                  View Post
-                </button>
-              )}
-
-              {/* ✅ Mention actions */}
-              {n.type === "mention" && (
-                <>
+              <div className="notification-tab__actions">
+                {!n.isRead && (
                   <button
-                    className="notification-tab__accept-btn"
-                    onClick={() => acceptMention(n._id)}
+                    className="notification-tab__mark-btn"
+                    onClick={() => markAsRead(n._id)}
                   >
-                    Accept
+                    Mark as read
                   </button>
+                )}
+
+                {n.type === "report" && (
                   <button
-                    className="notification-tab__reject-btn"
-                    onClick={() => rejectMention(n._id)}
+                    className="notification-tab__view-btn"
+                    onClick={() => viewPost(n.relatedPostMeta)}
                   >
-                    Reject
+                    View Post
                   </button>
-                </>
-              )}
-            </div>
-          </li>
-        ))}
+                )}
+
+                {n.type === "mention" && (
+                  <>
+                    <button
+                      className="notification-tab__accept-btn"
+                      disabled={isActing || !mentionId}
+                      title={!mentionId ? "Mention id missing in notification" : "Accept mention"}
+                      onClick={() => doMentionAction(n._id, mentionId, "accept")}
+                    >
+                      {isActing ? "Accepting..." : "Accept"}
+                    </button>
+                    <button
+                      className="notification-tab__reject-btn"
+                      disabled={isActing || !mentionId}
+                      title={!mentionId ? "Mention id missing in notification" : "Reject mention"}
+                      onClick={() => doMentionAction(n._id, mentionId, "reject")}
+                    >
+                      {isActing ? "Rejecting..." : "Reject"}
+                    </button>
+                  </>
+                )}
+
+                {n.type === "mention-accepted" && (
+                  <span className="notification-tab__status-chip success">Accepted</span>
+                )}
+                {n.type === "mention-rejected" && (
+                  <span className="notification-tab__status-chip danger">Rejected</span>
+                )}
+              </div>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );

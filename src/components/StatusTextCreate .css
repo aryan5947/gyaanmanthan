@@ -1,0 +1,140 @@
+/* Fullscreen modal background */
+.status-form {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #0f0f0f;                  /* soft muted lavender background */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+/* Main text (centered, big, minimal border) */
+.status-form textarea {
+  width: 98vw;
+  max-width: 700px;
+  background: transparent;
+  outline: none;
+  border: none;
+  font-size: clamp(2.2rem, 7vw, 4.2rem);
+  font-weight: 400;
+  color: #ebe2ed;
+  text-align: center;
+  margin: auto;
+  resize: none;
+  padding: 0;
+  height: auto;
+  min-height: 120px;
+  line-height: 1.1;
+  box-shadow: none;
+  letter-spacing: 0.01em;
+  transition: box-shadow 0.19s;
+}
+.status-form textarea:focus { outline: none; box-shadow: none; }
+
+/* Hide other fields unless needed (for minimal look) */
+.status-form input,
+.status-form select {
+  display: none;
+}
+
+/* Error and success */
+.form-error,
+.status-form .form-error {
+  color: #ff5f5f;
+  margin-top: 18px;
+  background: rgba(0,0,0,0.08);
+  padding: 10px 20px;
+  border-radius: 14px;
+  text-align: center;
+  font-size: 1.09rem;
+}
+.status-form [style*="color: green"] {
+  margin-top: 18px;
+  background: rgba(0,0,0,0.06);
+  padding: 10px 20px;
+  border-radius: 14px;
+  text-align: center;
+  font-size: 1.09rem;
+}
+
+/* Send button (floating at bottom-right, round, green) */
+.status-form button[type="submit"] {
+  position: absolute;
+  right: 2.5vw;
+  bottom: 3.5vh;
+  width: 63px;
+  height: 63px;
+  background: #3ec080;
+  color: #232218;
+  border: none;
+  border-radius: 50%;
+  font-size: 1.0rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.20);
+  cursor: pointer;
+  transition: background .2s, transform .1s;
+}
+.status-form button[type="submit"]:hover {
+  background: #23a46a;
+  transform: scale(1.06);
+}
+.status-form button[type="submit"]:disabled {
+  opacity: 0.55;
+  background: #b6b4b7;
+  color: #51525c;
+  cursor: not-allowed;
+}
+.status-close-btn {
+  position: absolute;
+  left: 40px;
+  top: 36px;
+  font-size: 2.1rem;
+  color: #f8f6f2;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 6;
+  font-family: "Inter", system-ui, sans-serif;
+  font-weight: 400;
+}
+@media (max-width: 540px) {
+  .status-close-btn { left: 22px; top: 20px; font-size: 1.4rem;}
+}
+
+/* Bottom left pill for context */
+.status-context-pill {
+  position: absolute;
+  left: 36px;
+  bottom: 22px;
+  background: #23221f;
+  color: #ebe2ed;
+  padding: 10px 18px;
+  border-radius: 20px;
+  font-size: 1.12rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  font-family: 'Inter', system-ui, sans-serif;
+  opacity: 0.95;
+}
+
+/* Responsive mobile tweaks */
+@media (max-width: 540px) {
+  .status-form textarea {
+    font-size: 2.35rem;
+    min-height: 80px;
+  }
+  .status-form button[type="submit"] {
+    width: 54px; height: 54px; font-size: 1.6rem;
+    right: 16px; bottom: 18px;
+  }
+  .status-form::before { left: 22px; top: 20px; font-size: 1.4rem;}
+  .status-form::after { right: 18px; top: 16px; font-size: 1.01rem;}
+  .status-context-pill { left: 14px; bottom: 10px; padding: 7px 13px; font-size: .93rem;}
+}

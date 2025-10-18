@@ -9,10 +9,11 @@ import {
   DocumentTextIcon,
   UserCircleIcon,
   BellIcon,
+  ChatBubbleLeftRightIcon,
   InformationCircleIcon,
   ShieldCheckIcon,
   ExclamationTriangleIcon,
-} from "@heroicons/react/24/outline";   // ✅ Heroicons imports
+} from "@heroicons/react/24/outline"; // ✅ Heroicons imports
 import PostTypeSelectorModal from "../pages/PostTypeSelector";
 import "./Layout.css";
 
@@ -23,11 +24,11 @@ type UserType = {
 
 const tabItems = [
   { label: "Home", icon: <HomeIcon className="h-6 w-6" />, to: "/" },
+  { label: "Statuses", icon: <ChatBubbleLeftRightIcon className="h-6 w-6" />, to: "/statuses" },
   { label: "Notifications", icon: <BellIcon className="h-6 w-6" />, to: "/notifications" },
   { label: "Full Page Post", icon: <DocumentTextIcon className="h-6 w-6" />, to: "/feed" },
- // { label: "Create", icon: <PencilSquareIcon className="h-6 w-6" />, to: "/create" },
+  // { label: "Create", icon: <PencilSquareIcon className="h-6 w-6" />, to: "/create" },
   { label: "Profile", icon: <UserCircleIcon className="h-6 w-6" />, to: "/profile" },
-  
 
   // 👇 Legal/Trust Pages with better suited icons
   { label: "About Us", icon: <InformationCircleIcon className="h-6 w-6" />, to: "/about" },
@@ -43,6 +44,8 @@ export default function Layout() {
   const [user, setUser] = useState<UserType | null>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isTablet, setIsTablet] = useState(false);
+  const [deviceReady, setDeviceReady] = useState(false); // device type detected
+  const [splashDone, setSplashDone] = useState(false); // minimum splash duration
   const contentRef = useRef<HTMLDivElement>(null);
 
   // Detect mobile and tablet screens
@@ -51,11 +54,21 @@ export default function Layout() {
       const width = window.innerWidth;
       setIsMobile(width <= 600);
       setIsTablet(width > 600 && width <= 1024);
+      setDeviceReady(true);
     }
     handleResize();
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+
+    // Maintain a minimal splash duration for a premium feel
+    const timer = setTimeout(() => setSplashDone(true), 1500);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      clearTimeout(timer);
+    };
   }, []);
+
+  const isReady = deviceReady && splashDone;
 
   // Greeting logic
   function getGreeting(): string {
@@ -93,6 +106,50 @@ export default function Layout() {
     el.addEventListener("scroll", handleScroll);
     return () => el.removeEventListener("scroll", handleScroll);
   }, [lastScrollY, isMobile, isTablet]);
+
+  // Splash Screen (Pro-level, dark, with Welcome to GyaanManthan)
+  if (!isReady) {
+    return (
+      <div className="splash-loader" aria-live="polite" aria-busy="true">
+        <motion.div
+          className="splash-glow"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6 }}
+        />
+        <motion.img
+          src="/gyaanmanthan-logo.png"
+          alt="GyaanManthan Logo"
+          className="splash-logo"
+          initial={{ scale: 0.88, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        />
+        <motion.h1
+          className="splash-text"
+          initial={{ y: 12, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.15, duration: 0.5 }}
+        >
+          Welcome to <span>GyaanManthan</span>
+        </motion.h1>
+        <motion.p
+          className="splash-subtext"
+          initial={{ y: 8, opacity: 0 }}
+          animate={{ y: 0, opacity: 0.95 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+        >
+          ज्ञान ही शक्ति है
+        </motion.p>
+
+        <div className="splash-spinner" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="layout-wrapper">
@@ -150,49 +207,48 @@ export default function Layout() {
               )}
             </div>
             <nav className="nav-links">
-   <ul>
-    {tabItems.map(({ label, icon, to }) => {
-      if (label === "Notifications") {
-        return (
-          <div key={label}>
-            <li>
-              <Link
-                to={to}
-                className={`nav-item${location.pathname === to ? " active" : ""}`}
-              >
-                <span className="icon">{icon}</span>
-                <span className="label">{label}</span>
-              </Link>
-            </li>
+              <ul>
+                {tabItems.map(({ label, icon, to }) => {
+                  if (label === "Notifications") {
+                    return (
+                      <div key={label}>
+                        <li>
+                          <Link
+                            to={to}
+                            className={`nav-item${location.pathname === to ? " active" : ""}`}
+                          >
+                            <span className="icon">{icon}</span>
+                            <span className="label">{label}</span>
+                          </Link>
+                        </li>
 
-            {/* ✅ Profile के नीचे Choose Post Type */}
-            <li>
-              <button className="nav-item" onClick={() => setOpenModal(true)}>
-                <span className="icon">
-                  <PencilSquareIcon className="h-6 w-6" />
-                </span>
-                <span className="label">Choose Post Type</span>
-              </button>
-            </li>
-          </div>
-        );
-      }
+                        {/* ✅ Profile के नीचे Choose Post Type */}
+                        <li>
+                          <button className="nav-item" onClick={() => setOpenModal(true)}>
+                            <span className="icon">
+                              <PencilSquareIcon className="h-6 w-6" />
+                            </span>
+                            <span className="label">Choose Post Type</span>
+                          </button>
+                        </li>
+                      </div>
+                    );
+                  }
 
-      return (
-        <li key={label}>
-          <Link
-            to={to}
-            className={`nav-item${location.pathname === to ? " active" : ""}`}
-          >
-            <span className="icon">{icon}</span>
-            <span className="label">{label}</span>
-          </Link>
-        </li>
-      );
-    })}
-  </ul>
-</nav>
-
+                  return (
+                    <li key={label}>
+                      <Link
+                        to={to}
+                        className={`nav-item${location.pathname === to ? " active" : ""}`}
+                      >
+                        <span className="icon">{icon}</span>
+                        <span className="label">{label}</span>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </nav>
           </aside>
 
           <main className="main-content" ref={contentRef}>
@@ -251,18 +307,17 @@ export default function Layout() {
               className={`tab-icon${location.pathname === "/" ? " active" : ""}`}
               aria-label="Home"
             >
-              <HomeIcon />
-            </Link>
-             {/* Notifications icon mobile & tablet */}
-            <Link
-              to="/notifications"
-              className={`tab-icon${location.pathname === "/notifications" ? " active" : ""}`}
-              aria-label="Notifications"
-            >
-              <BellIcon />
+              <HomeIcon className="h-6 w-6" />
             </Link>
 
-            {/* Create button center */}
+            <Link
+              to="/statuses"
+              className={`tab-icon${location.pathname === "/statuses" ? " active" : ""}`}
+              aria-label="statuses"
+            >
+              <ChatBubbleLeftRightIcon className="h-6 w-6" />
+            </Link>
+
             <button
               className="tab-icon"
               aria-label="Choose Post Type"
@@ -270,25 +325,23 @@ export default function Layout() {
               style={{ background: "none", border: "none" }}
               onClick={() => setOpenModal(true)}
             >
-              <PencilSquareIcon />
+              <PencilSquareIcon className="h-6 w-6" />
             </button>
 
             <Link
-              to="/feed"
-              className={`tab-icon${location.pathname === "/feed" ? " active" : ""}`}
-              aria-label="Full Page Post"
+              to="/notifications"
+              className={`tab-icon${location.pathname === "/notifications" ? " active" : ""}`}
+              aria-label="notifications"
             >
-              <DocumentTextIcon />
+              <BellIcon className="h-6 w-6" />
             </Link>
             <Link
               to="/profile"
               className={`tab-icon${location.pathname === "/profile" ? " active" : ""}`}
               aria-label="Profile"
             >
-              <UserCircleIcon />
+              <UserCircleIcon className="h-6 w-6" />
             </Link>
-
-           
           </nav>
         </>
       )}

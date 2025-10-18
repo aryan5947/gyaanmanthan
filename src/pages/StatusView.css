@@ -1,0 +1,293 @@
+/* StatusView.css */
+
+/* Root full overlay */
+.svp-root {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #0b0b0d;
+  color: #e9eaee;
+  display: grid;
+  place-items: center;
+  padding:
+    max(16px, env(safe-area-inset-top))
+    max(16px, env(safe-area-inset-right))
+    max(16px, env(safe-area-inset-bottom))
+    max(16px, env(safe-area-inset-left));
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+/* Phone panel — strict 9:16 on mobile, scales on desktop */
+.svp-panel {
+  width: min(92vw, 420px);
+  aspect-ratio: 9 / 16;   /* lock ratio */
+  height: auto;
+  max-height: 100vh;       /* viewport guard */
+  margin: 0;
+  background: linear-gradient(180deg, #141417 0%, #0f0f12 100%);
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Top bar + progress pinned inside safe area */
+.svp-topbar {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  top: 10px;
+  display: grid;
+  grid-template-columns: 28px 1fr 28px;
+  align-items: center;
+  gap: 8px;
+  z-index: 5;
+}
+.svp-back {
+  width: 28px; height: 28px; border-radius: 999px; border: none;
+  color: #0b0b0d;
+  background: linear-gradient(135deg, #ffe08a, #f5c558 58%, #b88a2c);
+  display: grid; place-items: center; font-weight: 700; cursor: pointer;
+  transition: transform .15s ease, filter .15s ease;
+}
+.svp-back:hover { transform: translateY(-1px); filter: brightness(1.05); }
+.svp-back:active { transform: translateY(0); filter: brightness(.98); }
+
+.svp-progress { display: flex; align-items: center; gap: 4px; height: 6px; }
+.svp-bar { position: relative; flex: 1 1 auto; height: 4px; border-radius: 3px; background: #1e1f26; overflow: hidden; box-shadow: inset 0 0 0 1px rgba(255, 224, 138, 0.07); }
+.svp-bar--active { background: linear-gradient(90deg, #1f2027, #22232a); }
+.svp-bar-fill { position: absolute; inset: 0 auto 0 0; width: 0%; background: linear-gradient(90deg, #ffe08a, #f5c558 70%, #d4a63c); box-shadow: 0 0 12px rgba(255, 224, 138, 0.35); }
+
+/* Header */
+.svp-header {
+  position: absolute; top: 32px; left: 56px; right: 56px; z-index: 5;
+}
+.svp-user { display: flex; align-items: center; gap: 10px; }
+.svp-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; background: #23242b; box-shadow: 0 0 0 2px rgba(255, 224, 138, 0.18); }
+.svp-user-meta { display: grid; gap: 2px; }
+.svp-name { font-size: 14px; font-weight: 700; letter-spacing: .2px; color: #f3f4f6; display: inline-flex; align-items: center; gap: 6px; text-shadow: 0 1px 0 rgba(0,0,0,0.35); }
+.svp-gold {
+  width: 16px;   /* ya jo size chahiye */
+  height: 16px;
+  display: inline-block;
+  object-fit: contain;
+  vertical-align: middle;
+}
+
+.svp-time { font-size: 12px; color: #a8adb7; }
+
+/* Body: keep clear gutters above/below for chrome */
+.svp-body {
+  position: absolute;
+  left: 12px; right: 12px;
+  top: 72px;         /* below header/progress */
+  bottom: 84px;      /* above actions */
+  display: grid;
+  place-items: center;
+}
+
+.svp-media-wrapper {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+/* Append these styles to your existing StatusView.css */
+
+/* Ensure overlay positioning works */
+.svp-media-wrapper {
+  position: relative;
+}
+
+/* Caption over media (image/video) */
+.svp-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 12px 14px;
+  color: #f5f5f5;
+  font-size: 0.98rem;
+  line-height: 1.35rem;
+  white-space: pre-wrap;           /* keep line breaks */
+  word-break: break-word;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.55) 40%, rgba(0,0,0,0.75) 100%);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+  pointer-events: none;            /* don't block media controls */
+}
+
+/* Text-only story layout */
+.svp-text-only {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  border-radius: 12px;
+  padding: 24px;
+  color: #f8f7f2;
+  text-align: center;
+}
+.svp-text-only-inner {
+  font-size: 1.15rem;
+  line-height: 1.6rem;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.35);
+  margin: 0 auto;
+  text-align: center;
+  max-width: 100%;
+  padding: 0 12px;
+
+  /* Normal text should wrap naturally */
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+/* Optional readability fades */
+.svp-media-wrapper::before,
+.svp-media-wrapper::after {
+  content: "";
+  position: absolute; left: 0; right: 0; height: 60px; pointer-events: none; z-index: 2;
+}
+.svp-media-wrapper::before { top: 0;  }
+.svp-media-wrapper::after  { bottom: 0;  }
+
+/* Media inside — never crop */
+.svp-media {
+  width: 100%; height: 100%;
+  object-fit: contain; object-position: center;
+}
+.svp-img { filter: none; }
+
+/* Media nav */
+.svp-media-nav {
+  position: absolute; inset: 0; display: flex; justify-content: space-between; align-items: center; pointer-events: none; z-index: 4;
+}
+.svp-media-nav > button {
+  pointer-events: auto;
+  width: 44px; height: 44px; margin: 0 8px; border-radius: 999px;
+  border: 1px solid rgba(255,224,138,0.22);
+  background: rgba(15,15,18,0.55); color: #f5f6f8; backdrop-filter: blur(6px);
+  cursor: pointer; font-size: 20px; display: grid; place-items: center;
+  transition: all .18s ease;
+}
+.svp-media-nav > button:disabled { opacity: .35; cursor: not-allowed; }
+.svp-media-nav > button:hover:not(:disabled) { transform: translateY(-1px); background: rgba(22,22,26,0.7); }
+
+/* Footer actions pinned */
+.svp-actions {
+  position: absolute; left: 5px; right: 5px; bottom: 12px;
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: end; gap: 1px; z-index: 6;
+}
+
+/* Reacts */
+.svp-reacts-trigger { justify-self: start; position: relative; }
+.svp-react-trigger-btn {
+  width: 40px; height: 40px; border-radius: 12px; border: 1px solid rgba(255,224,138,0.22);
+  background: rgba(15,16,20,0.65); color: #ffe08a; display: grid; place-items: center; cursor: pointer;
+  backdrop-filter: blur(6px); transition: transform .15s ease, background .15s ease, border-color .15s ease;
+}
+.svp-react-trigger-btn:hover { transform: translateY(-1px); background: rgba(18,19,24,0.8); border-color: rgba(255,224,138,0.35); }
+.svp-reacts-popup {
+  position: absolute; bottom: 52px; left: 0; padding: 8px;
+  background: rgba(12,13,16,0.9); border: 1px solid rgba(255,224,138,0.22);
+  border-radius: 14px; display: flex; gap: 8px;
+  box-shadow: 0 8px 30px rgba(0,0,0,.55), 0 0 0 1px rgba(255,224,138,.06) inset;
+  backdrop-filter: blur(10px);
+}
+.svp-react-btn {
+  min-width: 56px; height: 40px; padding: 0 10px; border-radius: 10px; border: 1px solid transparent;
+  background: #16171e; color: #e9eaee; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer;
+  transition: transform .12s ease, background .12s ease, border-color .12s ease;
+}
+.svp-react-btn:hover { transform: translateY(-1px); background: #1b1c23; border-color: rgba(255,224,138,0.28); }
+.svp-react-count { font-size: 12px; color: #aeb3be; }
+
+/* Meta */
+.svp-meta {
+  justify-self: center;
+  display: inline-flex; align-items: center; gap: 0px; padding: 8px 12px;
+  border-radius: 12px; background: rgba(15,16,20,0.6); border: 1px solid rgba(255,224,138,0.16);
+  backdrop-filter: blur(6px); box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+}
+.svp-like { border: none; background: transparent; color: #ff6b81; font-weight: 700; cursor: pointer; transition: transform .12s ease; }
+.svp-like:hover { transform: translateY(-1px) scale(1.02); }
+.svp-views { color: #c5cad4; font-size: 12px; }
+.svp-delete {
+  width: 36px; height: 36px; border-radius: 10px; border: 1px solid rgba(255, 99, 99, 0.25);
+  background: rgba(50, 12, 12, 0.35); color: #ff6b6b !important; cursor: pointer; display: grid; place-items: center;
+  transition: transform .12s ease, background .12s ease, border-color .12s ease;
+}
+.svp-delete:hover { transform: translateY(-1px); background: rgba(55, 14, 14, 0.5); border-color: rgba(255, 99, 99, 0.4); }
+
+/* Story index nav */
+.svp-story-nav {
+  justify-self: end; display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(15,16,20,0.6); border: 1px solid rgba(255,224,138,0.16);
+  padding: 6px 8px; border-radius: 12px; backdrop-filter: blur(6px);
+}
+.svp-story-nav > button {
+  height: 32px; padding: 0 12px; border-radius: 8px; border: 1px solid rgba(255,224,138,0.22);
+  background: #16171e; color: #f1f2f5; cursor: pointer;
+  transition: background .12s ease, transform .12s ease, border-color .12s ease;
+}
+.svp-story-nav > button:disabled { opacity: .45; cursor: not-allowed; }
+.svp-story-nav > button:hover:not(:disabled) { background: #1b1c23; transform: translateY(-1px); border-color: rgba(255,224,138,0.32); }
+.svp-story-nav > span { color: #cbd1db; font-size: 13px; }
+.svp-loading,
+.svp-error {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+  font-weight: 500;
+  color: #aeb3be;
+  letter-spacing: 0.3px;
+  text-align: center;
+  background: rgba(20, 20, 24, 0.6);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 224, 138, 0.12);
+}
+
+@media (max-width: 1026px) {
+  .svp-root {
+    padding: 0 !important;
+  }
+  .svp-panel {
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: 100vw !important;
+    max-height: 100vh !important;
+    border-radius: 0 !important;
+    aspect-ratio: unset !important;
+    margin: 0 !important;
+    background: linear-gradient(180deg, #141417 0%, #0f0f12 100%);
+  }
+  .svp-body {
+    left: 0 !important;
+    right: 0 !important;
+    top: 72px !important;
+    bottom: 84px !important;
+    padding: 0 !important;
+  }
+}
+/* Mobile fine-tune */
+@media (max-width: 420px) {
+  .svp-header { left: 48px; right: 48px; top: 28px; }
+  .svp-avatar { width: 34px; height: 34px; }
+  .svp-actions { grid-template-columns: 1fr auto auto; }
+}
+
+/* Landscape handling: keep 9:16 */
+@media (orientation: landscape) {
+  .svp-panel {
+    height: min(92vh, 900px);
+    width: calc((min(92vh, 900px)) * 9 / 16);
+  }
+}
+
+/* Focus */
+.svp-panel :is(button, [role="button"]):focus-visible {
+  outline: 2px solid #ffe08a; outline-offset: 2px;
+}

@@ -6,6 +6,17 @@
     linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0)) ,
     #0c0d10; /* dark premium surface */
 }
+.feed-title {
+  color: #fff;
+  font-size: 2rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+  line-height: 48px;       /* ✅ Ensures vertical centering within 80px header */
+  margin: 0;                /* ✅ Removes default h2 margin */
+  padding: 0;               /* ✅ Keeps spacing tight */
+  display: inline-block;   /* ✅ Prevents unexpected block-level shifts */
+  vertical-align: middle;  /* ✅ Aligns emoji and text nicely */
+}
 
 /* Base tab button style (spacing/size preserved) */
 .tab-button {
