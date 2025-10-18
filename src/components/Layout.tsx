@@ -264,14 +264,27 @@ export default function Layout() {
                 <li>#खास_रिपोर्ट</li>
               </ul>
             </div>
-            <div className="right-panel-card">
-              <h2>फॉलो करें</h2>
-              <ul>
-                <li>Rahul Kumar</li>
-                <li>Anjali Singh</li>
-                <li>GlobalNews Hindi</li>
-              </ul>
-            </div>
+           <div className="right-panel-card">
+  <h2>फॉलो करें</h2>
+  <ul>
+    <li>Dr. Deep Kumar Shukla</li>
+  </ul>
+  <div style={{ marginTop: 10, fontSize: "1rem" }}>
+    <a
+      href="https://globalnewsentertainment.com/"
+      target="_blank"
+      rel="noopener noreferrer"
+      style={{
+        color: "#1976d2",
+        textDecoration: "none",
+        fontWeight: 500,
+        display: "inline-block"
+      }}
+    >
+      Global News &amp; Entertainment Service
+    </a>
+  </div>
+</div>
             <SidebarTrustBlock />
           </aside>
         </>
