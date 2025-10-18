@@ -179,13 +179,13 @@
   position: absolute;
   left: 5px;
   right: 5px;
-  bottom: 12px;
+  bottom: 0; /* <-- change this from 12px to 0 */
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: end;
   gap: 1px;
   z-index: 6;
-  padding-bottom: env(safe-area-inset-bottom, 16px); /* 👈 Add this line! */
+  padding-bottom: env(safe-area-inset-bottom, 16px); /* keep this line */
 }
 
 /* Reacts */
@@ -284,9 +284,10 @@
 @media (max-width: 420px) {
   .svp-header { left: 48px; right: 48px; top: 28px; }
   .svp-avatar { width: 34px; height: 34px; }
-  .svp-actions {
+    .svp-actions {
     grid-template-columns: 1fr auto auto;
-    padding-bottom: env(safe-area-inset-bottom, 16px); /* 👈 Add here too if you want */
+    bottom: 0 !important; /* add this line */
+    padding-bottom: env(safe-area-inset-bottom, 16px); /* keep this line */
   }
 }
 
