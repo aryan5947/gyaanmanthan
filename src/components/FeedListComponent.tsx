@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import SEO from "../components/SEO";
 // import { useParams } from "react-router-dom"; // not used
 // import { useApi } from "../hooks/useApi"; // not used
 import PostFilters from "../components/PostFilters";
@@ -122,7 +123,8 @@ const contentToPlainText = (content: any): string => {
         ? block.children.map((c: any) => c?.text || "").join("")
         : ""
     )
-    .join(" ");
+    .join(" ")
+    .trim();
 };
 
 // ---------- Safe fetch with minimal backoff + Retry-After ----------
@@ -146,7 +148,6 @@ const safeFetch = async (
           msg || "Too many requests",
           retryAfter ? `(Retry-After: ${retryAfter}s)` : ""
         );
-        // Respect Retry-After if present on next retry
         if (n < retries) {
           let waitMs = base * Math.pow(2, n) + Math.floor(Math.random() * 200);
           if (retryAfter) {
@@ -168,7 +169,6 @@ const safeFetch = async (
         return { data: json, error: null };
       }
 
-      // Non-JSON
       const text = await res.text().catch(() => "");
       if (!res.ok) {
         return { data: null, error: text || res.statusText || "Request failed" };
@@ -195,7 +195,6 @@ class ViewsQueue {
   private intervalMs = 700; // adjust if still rate-limited
 
   enqueue(item: ViewItem) {
-    // Dedup per session key is handled at caller-set level
     this.q.push(item);
     this.process();
   }
@@ -216,8 +215,6 @@ class ViewsQueue {
           body: JSON.stringify({ postId: item.postId, postType: item.postType }),
         }).catch(() => {});
       } catch {}
-      // Space out requests
-      // eslint-disable-next-line no-await-in-loop
       await new Promise((r) => setTimeout(r, this.intervalMs));
     }
 
@@ -855,8 +852,78 @@ export default function FeedPage() {
     // eslint-disable-next-line
   }, [filteredSlottedFeed.map((p) => `${p.postType}-${p._id}`).join(",")]);
 
+  // ------------------ SEO variables (dynamic) ------------------
+  const siteOrigin =
+    (import.meta as any).env?.VITE_SITE_URL ||
+    (typeof window !== "undefined" ? window.location.origin : "https://gyaanmanthan.in");
+
+  const canonicalUrl = searchQuery
+    ? `${siteOrigin}/feed?search=${encodeURIComponent(searchQuery)}`
+    : `${siteOrigin}/feed`;
+
+  const pageTitle = searchQuery
+    ? `Search "${searchQuery}" - GyaanManthan | India’s Knowledge Social Media`
+    : `GyaanManthan Feed – India’s Knowledge & Gyaan Social Media`;
+
+  const topText =
+    filteredPostsOnly
+      .slice(0, 3)
+      .map((p) => [p.title, p.description].filter(Boolean).join(" — "))
+      .join(" | ") ||
+    "Discover and share gyaan, knowledge, facts and experiences on GyaanManthan.";
+
+  const pageDescription =
+    topText.length > 180 ? topText.slice(0, 179).trimEnd() + "…" : topText;
+
+  const itemListElements = filteredPostsOnly.slice(0, 20).map((p, idx) => ({
+    "@type": "ListItem",
+    position: idx + 1,
+    url: `${siteOrigin}/post-meta/${p._id}`,
+  }));
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        name: pageTitle,
+        url: canonicalUrl,
+        description: pageDescription,
+        isPartOf: { "@type": "WebSite", name: "GyaanManthan", url: siteOrigin },
+      },
+      { "@type": "ItemList", itemListElement: itemListElements },
+    ],
+  };
+
   return (
     <div className="feed-page-wrapper">
+      {/* SEO Head */}
+      <SEO
+        title={pageTitle}
+        description={pageDescription}
+        canonical={canonicalUrl}
+        robots={searchQuery ? "noindex,follow" : "index,follow"}
+        openGraph={{
+          title: pageTitle,
+          description: pageDescription,
+          url: canonicalUrl,
+          type: "website",
+          site_name: "GyaanManthan",
+          image: `${siteOrigin}/og-image-1200x630.png`,
+          imageWidth: 1200,
+          imageHeight: 630,
+          locale: "en_IN",
+        }}
+        twitter={{
+          card: "summary_large_image",
+          title: pageTitle,
+          description: pageDescription,
+          image: `${siteOrigin}/twitter-image-1200x600.png`,
+          site: "@gyaanmanthan",
+        }}
+        jsonLd={jsonLd}
+      />
+
       <div className="feed-filters-area">
         <PostFilters onSearch={handleSearch} />
       </div>
@@ -1036,16 +1103,17 @@ export default function FeedPage() {
                         )}
                       </button>
 
+                      {/* Share */}
                       <button
-                       className="icon-btn"
-                       onClick={(e) => {
-                       e.stopPropagation();
-                        setSelectedPost(post);
-                       setIsShareOpen(true);
-                         }}
-                       aria-label="Share"
-                        >
-                       <ShareIcon className="icon" />
+                        className="icon-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedPost(post);
+                          setIsShareOpen(true);
+                        }}
+                        aria-label="Share"
+                      >
+                        <ShareIcon className="icon" />
                       </button>
 
                       {/* Comment */}
@@ -1102,14 +1170,14 @@ export default function FeedPage() {
           onClose={() => setIsCommentsOpen(false)}
         />
       )}
-   {selectedPost && isShareOpen && (
-  <ShareModal
-    url={`${window.location.origin}/post-meta/${selectedPost._id}`}
-    title={selectedPost.title}
-    isOpen={isShareOpen}
-    onClose={() => setIsShareOpen(false)}
-  />
-)}
+      {selectedPost && isShareOpen && (
+        <ShareModal
+          url={`${window.location.origin}/post-meta/${selectedPost._id}`}
+          title={selectedPost.title}
+          isOpen={isShareOpen}
+          onClose={() => setIsShareOpen(false)}
+        />
+      )}
       {selectedPost && isReportOpen && (
         <ReportModal
           postMetaId={selectedPost._id}

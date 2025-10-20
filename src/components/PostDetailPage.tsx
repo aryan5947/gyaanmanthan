@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import SEO from "../components/SEO";
 import CommentsModal from "../components/CommentsModal";
 import { renderContent } from "../utils/renderContent";
 import ShareModal from "../components/ShareModal";
@@ -359,7 +360,7 @@ export default function PostDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
-   const [isShareOpen, setIsShareOpen] = useState(false);
+  const [isShareOpen, setIsShareOpen] = useState(false);
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [selectedPostAuthorId, setSelectedPostAuthorId] = useState<string | null>(null);
@@ -436,7 +437,7 @@ export default function PostDetailPage() {
             const postId = item.data._id.toString();
             return {
               ...item.data,
-              url: `http://gyaanmanthan.in/posts/${postId}`,
+              url: `https://gyaanmanthan.in/post/${postId}`,
               isLikedByMe: likedPosts.includes(postId),
               isSavedByMe: savedPosts.includes(postId),
             } as Post;
@@ -469,7 +470,7 @@ export default function PostDetailPage() {
       setLoading(true);
       setError(null);
 
-      // Use posts feed (as in your code). If you have /api/post-meta/feed, you can switch.
+      // Use posts feed
       const { data, error } = await safeFetch(
         `${import.meta.env.VITE_API_URL}/api/posts/feed`,
         { headers: token ? { Authorization: `Bearer ${token}` } : {} },
@@ -488,7 +489,7 @@ export default function PostDetailPage() {
             const postId = item.data._id.toString();
             return {
               ...item.data,
-              url: `http://gyaanmanthan.in/posts/${postId}`,
+              url: `https://gyaanmanthan.in/post/${postId}`,
               isLikedByMe: likedPosts.includes(postId),
               isSavedByMe: savedPosts.includes(postId),
             } as Post;
@@ -719,27 +720,24 @@ export default function PostDetailPage() {
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
 
-        if ((err as any).message?.includes("Already saved")) {
+        if (err.message?.includes("Already saved")) {
           const forced = [...new Set([...prev, postId])];
           setSavedPosts(forced);
           localStorage.setItem("savedPosts", JSON.stringify(forced));
           return;
         }
-        if ((err as any).message?.includes("Already unsaved")) {
+        if (err.message?.includes("Already unsaved")) {
           const forced = prev.filter((id) => id !== postId);
           setSavedPosts(forced);
           localStorage.setItem("savedPosts", JSON.stringify(forced));
           return;
         }
-
-        // Rollback
         setSavedPosts(prev);
         localStorage.setItem("savedPosts", JSON.stringify(prev));
         console.error(`Failed to ${isSaved ? "unsave" : "save"}:`, err);
         alert(`Could not ${isSaved ? "unsave" : "save"} post. Try again.`);
       }
     } catch (err) {
-      // Rollback on network error
       setSavedPosts(prev);
       localStorage.setItem("savedPosts", JSON.stringify(prev));
       console.error(`Error during ${isSaved ? "unsave" : "save"}`, err);
@@ -777,11 +775,142 @@ export default function PostDetailPage() {
     } catch {}
   };
 
-  if (loading) return <p className="status-message">Loading posts...</p>;
-  if (error) return <p className="status-message error-message">{error}</p>;
+  // ------------------ SEO variables (dynamic for this page) ------------------
+  const siteOrigin =
+    (import.meta as any).env?.VITE_SITE_URL ||
+    (typeof window !== "undefined" ? window.location.origin : "https://gyaanmanthan.in");
+
+  // For list page, canonical can be current URL; fallback to /posts
+  const canonicalUrl =
+    typeof window !== "undefined" ? window.location.href : `${siteOrigin}/posts`;
+
+  const pageTitle = "Latest Posts – GyaanManthan | India’s Knowledge Social Media";
+
+  const topText =
+    posts
+      .slice(0, 3)
+      .map((p) => [p.title, p.description].filter(Boolean).join(" — "))
+      .join(" | ") ||
+    "Read, discover and share gyaan, knowledge, facts and experiences on GyaanManthan.";
+
+  const pageDescription =
+    topText.length > 180 ? topText.slice(0, 179).trimEnd() + "…" : topText;
+
+  const itemListElements = posts.slice(0, 20).map((p, idx) => ({
+    "@type": "ListItem",
+    position: idx + 1,
+    url: `${siteOrigin}/post/${p._id}`,
+  }));
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        name: pageTitle,
+        url: canonicalUrl,
+        description: pageDescription,
+        isPartOf: { "@type": "WebSite", name: "GyaanManthan", url: siteOrigin },
+      },
+      { "@type": "ItemList", itemListElement: itemListElements },
+    ],
+  };
+
+  if (loading) {
+    return (
+      <>
+        <SEO
+          title={pageTitle}
+          description={pageDescription}
+          canonical={canonicalUrl}
+          robots="index,follow"
+          openGraph={{
+            title: pageTitle,
+            description: pageDescription,
+            url: canonicalUrl,
+            type: "website",
+            site_name: "GyaanManthan",
+            image: `${siteOrigin}/og-image-1200x630.png`,
+            imageWidth: 1200,
+            imageHeight: 630,
+            locale: "en_IN",
+          }}
+          twitter={{
+            card: "summary_large_image",
+            title: pageTitle,
+            description: pageDescription,
+            image: `${siteOrigin}/twitter-image-1200x600.png`,
+            site: "@gyaanmanthan",
+          }}
+          jsonLd={jsonLd}
+        />
+        <p className="status-message">Loading posts...</p>
+      </>
+    );
+  }
+
+  if (error) {
+    return (
+      <>
+        <SEO
+          title={pageTitle}
+          description={pageDescription}
+          canonical={canonicalUrl}
+          robots="noindex,follow"
+          openGraph={{
+            title: pageTitle,
+            description: pageDescription,
+            url: canonicalUrl,
+            type: "website",
+            site_name: "GyaanManthan",
+            image: `${siteOrigin}/og-image-1200x630.png`,
+            imageWidth: 1200,
+            imageHeight: 630,
+            locale: "en_IN",
+          }}
+          twitter={{
+            card: "summary_large_image",
+            title: pageTitle,
+            description: pageDescription,
+            image: `${siteOrigin}/twitter-image-1200x600.png`,
+            site: "@gyaanmanthan",
+          }}
+          jsonLd={jsonLd}
+        />
+        <p className="status-message error-message">{error}</p>
+      </>
+    );
+  }
 
   return (
     <div className="page-container">
+      {/* SEO Head */}
+      <SEO
+        title={pageTitle}
+        description={pageDescription}
+        canonical={canonicalUrl}
+        robots="index,follow"
+        openGraph={{
+          title: pageTitle,
+          description: pageDescription,
+          url: canonicalUrl,
+          type: "website",
+          site_name: "GyaanManthan",
+          image: `${siteOrigin}/og-image-1200x630.png`,
+          imageWidth: 1200,
+          imageHeight: 630,
+          locale: "en_IN",
+        }}
+        twitter={{
+          card: "summary_large_image",
+          title: pageTitle,
+          description: pageDescription,
+          image: `${siteOrigin}/twitter-image-1200x600.png`,
+          site: "@gyaanmanthan",
+        }}
+        jsonLd={jsonLd}
+      />
+
       {/* ---- Ads Banner at the Top ---- */}
       <AdsBanner />
 
@@ -865,59 +994,59 @@ export default function PostDetailPage() {
                   {post.description && <p className="post-description">{post.description}</p>}
                   <div className="post-body">{renderContent(post.content)}</div>
 
-                 {/* Actions */}
-<div className="post-actions">
-  {/* Comment Button (modal open) */}
-<input
-  type="text"
-  className="comment"
-  placeholder="Add a comment..."
-  onFocus={() =>
-    handleOpenComments(
-      post._id,
-      post.authorId || post.author?._id || ""
-    )
-  }
-/>
+                  {/* Actions */}
+                  <div className="post-actions">
+                    {/* Comment Button (modal open) */}
+                    <input
+                      type="text"
+                      className="comment"
+                      placeholder="Add a comment..."
+                      onFocus={() =>
+                        handleOpenComments(
+                          post._id,
+                          post.authorId || post.author?._id || ""
+                        )
+                      }
+                    />
 
-  {/* Save */}
-  <button
-    className={`icon-btn ${isSaved ? "active" : ""}`}
-    onClick={() => toggleSave(post._id)}
-  >
-    {isSaved ? (
-      <BookmarkIconSolid className="icon active-icon" />
-    ) : (
-      <BookmarkIconOutline className="icon" />
-    )}
-  </button>
+                    {/* Save */}
+                    <button
+                      className={`icon-btn ${isSaved ? "active" : ""}`}
+                      onClick={() => toggleSave(post._id)}
+                      aria-label="Save"
+                    >
+                      {isSaved ? (
+                        <BookmarkIconSolid className="icon active-icon" />
+                      ) : (
+                        <BookmarkIconOutline className="icon" />
+                      )}
+                    </button>
 
-  {/* Share */}
- <button
-                       className="icon-btn"
-                       onClick={(e) => {
-                       e.stopPropagation();
+                    {/* Share */}
+                    <button
+                      className="icon-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
                         setSelectedPost(post);
-                       setIsShareOpen(true);
-                         }}
-                       aria-label="Share"
-                        >
-                       <ShareIcon className="icon" />
-                      </button>
+                        setIsShareOpen(true);
+                      }}
+                      aria-label="Share"
+                    >
+                      <ShareIcon className="icon" />
+                    </button>
 
-
-  {/* Report */}
-  <button
-    className="icon-btn"
-    onClick={() => {
-      setSelectedPostId(post._id);
-      setIsReportOpen(true);
-    }}
-  >
-    <FlagIcon className="icon" />
-  </button>
-</div>
-
+                    {/* Report */}
+                    <button
+                      className="icon-btn"
+                      onClick={() => {
+                        setSelectedPostId(post._id);
+                        setIsReportOpen(true);
+                      }}
+                      aria-label="Report"
+                    >
+                      <FlagIcon className="icon" />
+                    </button>
+                  </div>
                 </article>
               </React.Fragment>
             );
@@ -939,14 +1068,15 @@ export default function PostDetailPage() {
       )}
 
       {/* Share Modal */}
-   {selectedPost && isShareOpen && (
-  <ShareModal
-    url={`${window.location.origin}/post/${selectedPost._id}`}
-    title={selectedPost.title}
-    isOpen={isShareOpen}
-    onClose={() => setIsShareOpen(false)}
-  />
-)}
+      {selectedPost && isShareOpen && (
+        <ShareModal
+          url={`${window.location.origin}/post/${selectedPost._id}`}
+          title={selectedPost.title}
+          isOpen={isShareOpen}
+          onClose={() => setIsShareOpen(false)}
+        />
+      )}
+
       {selectedPostId && isReportOpen && (
         <ReportModal
           postId={selectedPostId}

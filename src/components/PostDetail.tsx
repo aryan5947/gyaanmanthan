@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import SEO from "../components/SEO";
 import CommentsModal from "./CommentsModal";
 import { renderContent } from "../utils/renderContent";
 import { useParams } from "react-router-dom";
@@ -89,6 +90,16 @@ const normalizeContent = (content: any): any[] => {
   }
   return [];
 };
+
+const contentToPlainText = (content: any): string =>
+  normalizeContent(content)
+    .map((block: any) =>
+      Array.isArray(block?.children)
+        ? block.children.map((c: any) => c?.text || "").join("")
+        : ""
+    )
+    .join(" ")
+    .trim();
 
 interface ReportModalProps {
   postId: string;
@@ -208,8 +219,8 @@ export default function PostDetail() {
   const [error, setError] = useState<string | null>(null);
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
-    const [selectedPost, setSelectedPost] = useState<Post | null>(null);
-     const [isShareOpen, setIsShareOpen] = useState(false);
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [isShareOpen, setIsShareOpen] = useState(false);
   const [selectedPostAuthorId, setSelectedPostAuthorId] = useState<string | null>(null);
   const [sharePostUrl, setSharePostUrl] = useState<string | null>(null);
   const [sharePostTitle, setSharePostTitle] = useState<string | null>(null);
@@ -228,10 +239,8 @@ export default function PostDetail() {
   });
 
   // --------------- View Logic ---------------
-  // Store already viewed post ids in a Set to avoid duplicate "view" for same session
   const viewedPostIds = useRef<Set<string>>(new Set());
 
-  // Register view API call
   const registerView = async (postId: string) => {
     if (viewedPostIds.current.has(postId)) return;
     viewedPostIds.current.add(postId);
@@ -407,7 +416,7 @@ export default function PostDetail() {
             const postId = postData._id.toString();
             setPost({
               ...postData,
-              url: `http://gyaanmanthan.in/posts/${postId}`,
+              url: `https://gyaanmanthan.in/post/${postId}`,
               isLikedByMe: likedPosts.includes(postId),
               isSavedByMe: savedPosts.includes(postId),
               stats: getStats(postData.stats),
@@ -649,19 +658,191 @@ export default function PostDetail() {
     } catch {}
   };
 
-  if (loading) return <p className="status-message">Loading post...</p>;
-  if (error) return <p className="status-message error-message">{error}</p>;
+  // ------------------ SEO variables (dynamic) ------------------
+  const siteOrigin =
+    (import.meta as any).env?.VITE_SITE_URL ||
+    (typeof window !== "undefined" ? window.location.origin : "https://gyaanmanthan.in");
+
+  const canonicalUrl = `${siteOrigin}/post/${id || post?._id || ""}`;
+
+  const pageTitle = post
+    ? `${post.title} — ${post.authorName || post.author?.name || "GyaanManthan"} | GyaanManthan`
+    : "Post — GyaanManthan";
+
+  const pageDescription =
+    (post?.description && post.description.trim()) ||
+    (post?.content ? contentToPlainText(post.content).slice(0, 180) : "Read and share gyaan, knowledge, facts and experiences on GyaanManthan.");
+
+  const ogImage =
+    (post?.images && post.images[0]) ||
+    `${siteOrigin}/og-image-1200x630.png`;
+
+  const robots =
+    post?.status === "restricted" || post?.status === "blocked" || post?.status === "deleted"
+      ? "noindex,nofollow"
+      : "index,follow";
+
+  const jsonLd = post
+    ? {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Article",
+            headline: post.title,
+            description: pageDescription,
+            image: Array.isArray(post.images) && post.images[0] ? [post.images[0]] : [ogImage],
+            datePublished: post.createdAt || undefined,
+            author: {
+              "@type": "Person",
+              name: post.authorName || post.author?.name || "Unknown",
+              url: post.authorUsername ? `${siteOrigin}/user/${post.authorUsername}` : undefined
+            },
+            publisher: {
+              "@type": "Organization",
+              name: "GyaanManthan",
+              logo: {
+                "@type": "ImageObject",
+                url: `${siteOrigin}/logo-512x512.png`
+              }
+            },
+            mainEntityOfPage: {
+              "@type": "WebPage",
+              "@id": canonicalUrl
+            }
+          },
+          {
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item: `${siteOrigin}/`
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "Feed",
+                item: `${siteOrigin}/feed`
+              },
+              {
+                "@type": "ListItem",
+                position: 3,
+                name: post.title,
+                item: canonicalUrl
+              }
+            ]
+          }
+        ]
+      }
+    : {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        name: "Post — GyaanManthan",
+        url: canonicalUrl,
+        description: pageDescription
+      };
+
+  if (loading) {
+    return (
+      <>
+        <SEO
+          title={pageTitle}
+          description={pageDescription}
+          canonical={canonicalUrl}
+          robots={robots}
+          openGraph={{
+            title: pageTitle,
+            description: pageDescription,
+            url: canonicalUrl,
+            type: "article",
+            site_name: "GyaanManthan",
+            image: ogImage,
+            imageWidth: 1200,
+            imageHeight: 630,
+            locale: "en_IN",
+          }}
+          twitter={{
+            card: "summary_large_image",
+            title: pageTitle,
+            description: pageDescription,
+            image: ogImage,
+            site: "@gyaanmanthan",
+          }}
+          jsonLd={jsonLd}
+        />
+        <p className="status-message">Loading post...</p>
+      </>
+    );
+  }
+
+  if (error) {
+    return (
+      <>
+        <SEO
+          title={"Post — GyaanManthan"}
+          description={"Read and share gyaan, knowledge, facts and experiences on GyaanManthan."}
+          canonical={canonicalUrl}
+          robots={"noindex,follow"}
+          openGraph={{
+            title: "Post — GyaanManthan",
+            description: "Read and share gyaan, knowledge, facts and experiences on GyaanManthan.",
+            url: canonicalUrl,
+            type: "article",
+            site_name: "GyaanManthan",
+            image: ogImage,
+            imageWidth: 1200,
+            imageHeight: 630,
+            locale: "en_IN",
+          }}
+          twitter={{
+            card: "summary_large_image",
+            title: "Post — GyaanManthan",
+            description: "Read and share gyaan, knowledge, facts and experiences on GyaanManthan.",
+            image: ogImage,
+            site: "@gyaanmanthan",
+          }}
+          jsonLd={jsonLd}
+        />
+        <p className="status-message error-message">{error}</p>
+      </>
+    );
+  }
 
   return (
     <div className="page-container">
+      {/* SEO Head */}
+      <SEO
+        title={pageTitle}
+        description={pageDescription}
+        canonical={canonicalUrl}
+        robots={robots}
+        openGraph={{
+          title: pageTitle,
+          description: pageDescription,
+          url: canonicalUrl,
+          type: "article",
+          site_name: "GyaanManthan",
+          image: ogImage,
+          imageWidth: 1200,
+          imageHeight: 630,
+          locale: "en_IN",
+        }}
+        twitter={{
+          card: "summary_large_image",
+          title: pageTitle,
+          description: pageDescription,
+          image: ogImage,
+          site: "@gyaanmanthan",
+        }}
+        jsonLd={jsonLd}
+      />
+
       <main className="posts-container">
         {!post ? (
           <p className="status-message">No post found</p>
         ) : (
-          <article
-            className="post-card"
-            ref={postRef}
-          >
+          <article className="post-card" ref={postRef}>
             {/* Author + Date */}
             <div className="post-meta">
               {(post.authorAvatar || post.author?.avatarUrl) && (
@@ -673,7 +854,7 @@ export default function PostDetail() {
               )}
 
               <div className="author-info">
-                {/* नाम + गोल्डन टिक एक लाइन में */}
+                {/* नाम + गोल्डन टिक */}
                 <div className="author-name-line">
                   <span className="author-name">
                     {post.authorName || post.author?.name || "Unknown"}
@@ -688,7 +869,7 @@ export default function PostDetail() {
                   )}
                 </div>
 
-                {/* username + date एक लाइन में */}
+                {/* username + date */}
                 <div className="author-subline">
                   <span className="author-username">
                     @{post.authorUsername || post.author?.username || "unknown"}
@@ -725,39 +906,66 @@ export default function PostDetail() {
 
             {/* Actions */}
             <div className="post-actions">
-               {/* Comment Button (modal open) */}
-<input
-  type="text"
-  className="comment"
-  placeholder="Add a comment..."
-  onFocus={() =>
-    handleOpenComments(
-      post._id,
-      post.authorId || post.author?._id || ""
-    )
-  }
-/>
-              <button className={`icon-btn ${post.isSavedByMe ? "active" : ""}`} onClick={() => toggleSave(post._id)}>
-                {post.isSavedByMe ? <BookmarkIconSolid className="icon active-icon" /> : <BookmarkIconOutline className="icon" />}
+              {/* Comment input opens modal */}
+              <input
+                type="text"
+                className="comment"
+                placeholder="Add a comment..."
+                onFocus={() =>
+                  handleOpenComments(
+                    post._id,
+                    post.authorId || post.author?._id || ""
+                  )
+                }
+              />
+
+              {/* Like */}
+              <button
+                className={`icon-btn ${post.isLikedByMe ? "active" : ""}`}
+                onClick={() => toggleLike(post._id)}
+                aria-label="Like"
+              >
+                {post.isLikedByMe ? (
+                  <HeartIconSolid className="icon active-icon" />
+                ) : (
+                  <HeartIconOutline className="icon" />
+                )}
               </button>
-                {/* Share */}
-               <button
-                                     className="icon-btn"
-                                     onClick={(e) => {
-                                     e.stopPropagation();
-                                      setSelectedPost(post);
-                                     setIsShareOpen(true);
-                                       }}
-                                     aria-label="Share"
-                                      >
-                                     <ShareIcon className="icon" />
-                                    </button>
+
+              {/* Save */}
+              <button
+                className={`icon-btn ${post.isSavedByMe ? "active" : ""}`}
+                onClick={() => toggleSave(post._id)}
+                aria-label="Save"
+              >
+                {post.isSavedByMe ? (
+                  <BookmarkIconSolid className="icon active-icon" />
+                ) : (
+                  <BookmarkIconOutline className="icon" />
+                )}
+              </button>
+
+              {/* Share */}
+              <button
+                className="icon-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedPost(post);
+                  setIsShareOpen(true);
+                }}
+                aria-label="Share"
+              >
+                <ShareIcon className="icon" />
+              </button>
+
+              {/* Report */}
               <button
                 className="icon-btn"
                 onClick={() => {
                   setSelectedPostId(post._id);
                   setIsReportOpen(true);
                 }}
+                aria-label="Report"
               >
                 <FlagIcon className="icon" />
               </button>
@@ -781,13 +989,15 @@ export default function PostDetail() {
 
       {/* Share Modal */}
       {selectedPost && isShareOpen && (
-  <ShareModal
-    url={`${window.location.origin}/post/${selectedPost._id}`}
-    title={selectedPost.title}
-    isOpen={isShareOpen}
-    onClose={() => setIsShareOpen(false)}
-  />
-)}
+        <ShareModal
+          url={`${window.location.origin}/post/${selectedPost._id}`}
+          title={selectedPost.title}
+          isOpen={isShareOpen}
+          onClose={() => setIsShareOpen(false)}
+        />
+      )}
+
+      {/* Report Modal */}
       {selectedPostId && isReportOpen && (
         <ReportModal
           postId={selectedPostId}

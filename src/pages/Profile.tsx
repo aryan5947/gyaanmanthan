@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
+import SEO from "../components/SEO";
 import { useNavigate } from "react-router-dom";
 import Avatar from "../components/Avatar";
 import styles from "./Profile.module.css";
-import {
-  PencilSquareIcon,
-  TrashIcon,
-} from "@heroicons/react/24/outline"
+import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 
 const WhiteGearIcon = () => (
@@ -24,7 +22,6 @@ const WhiteGearIcon = () => (
     <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.05A1.65 1.65 0 0 0 11 3.09V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.05a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.05A1.65 1.65 0 0 0 19.4 15z" />
   </svg>
 );
-
 
 export default function Profile(): React.JSX.Element | null {
   const navigate = useNavigate();
@@ -50,31 +47,40 @@ export default function Profile(): React.JSX.Element | null {
         return res.json();
       })
       .then((data) => {
-       const fetchedUser = data.user || data;
+        const fetchedUser = data.user || data;
 
-fetchedUser.posts = fetchedUser.posts || [];
-fetchedUser.postMetas = fetchedUser.postMetas || [];
-fetchedUser.savedPosts = fetchedUser.savedPosts || [];
-fetchedUser.savedPostMetas = fetchedUser.savedPostMetas || [];
-fetchedUser.likedPosts = fetchedUser.likedPosts || [];
-fetchedUser.likedPostMetas = fetchedUser.likedPostMetas || [];
-fetchedUser.followersList = fetchedUser.followersList || [];
-fetchedUser.followingList = fetchedUser.followingList || [];
-fetchedUser.notifications = fetchedUser.notifications || [];
+        fetchedUser.posts = fetchedUser.posts || [];
+        fetchedUser.postMetas = fetchedUser.postMetas || [];
+        fetchedUser.savedPosts = fetchedUser.savedPosts || [];
+        fetchedUser.savedPostMetas = fetchedUser.savedPostMetas || [];
+        fetchedUser.likedPosts = fetchedUser.likedPosts || [];
+        fetchedUser.likedPostMetas = fetchedUser.likedPostMetas || [];
+        fetchedUser.followersList = fetchedUser.followersList || [];
+        fetchedUser.followingList = fetchedUser.followingList || [];
+        fetchedUser.notifications = fetchedUser.notifications || [];
 
-// calculate totals
-const totalPosts = (fetchedUser.posts.length) + (fetchedUser.postMetas.length);
-const totalLikes = (fetchedUser.likedPosts.length) + (fetchedUser.likedPostMetas.length);
-const totalSaves = (fetchedUser.savedPosts.length) + (fetchedUser.savedPostMetas.length);
+        // calculate totals
+        const totalPosts =
+          fetchedUser.posts.length + fetchedUser.postMetas.length;
+        const totalLikes =
+          fetchedUser.likedPosts.length + fetchedUser.likedPostMetas.length;
+        const totalSaves =
+          fetchedUser.savedPosts.length + fetchedUser.savedPostMetas.length;
 
-fetchedUser.stats = {
-  ...fetchedUser.stats, // preserve any existing fields
-  posts: totalPosts,
-  followers: fetchedUser.stats?.followers || fetchedUser.followersList.length || 0,
-  following: fetchedUser.stats?.following || fetchedUser.followingList.length || 0,
-  likes: totalLikes,
-  saves: totalSaves,
-};
+        fetchedUser.stats = {
+          ...fetchedUser.stats, // preserve any existing fields
+          posts: totalPosts,
+          followers:
+            fetchedUser.stats?.followers ||
+            fetchedUser.followersList.length ||
+            0,
+          following:
+            fetchedUser.stats?.following ||
+            fetchedUser.followingList.length ||
+            0,
+          likes: totalLikes,
+          saves: totalSaves,
+        };
         setUser(fetchedUser);
         setLoading(false);
       })
@@ -84,139 +90,234 @@ fetchedUser.stats = {
       });
   }, [navigate]);
 
-  if (loading) return <div className={styles.loading}>Loading profile...</div>;
-  if (!user) return null;
-// ---------- Settings ----------
-const handleLogout = () => {
-  localStorage.removeItem("token");
-  navigate("/login");
-};
+  // ---------- SEO (dynamic) ----------
+  const siteOrigin =
+    (import.meta as any).env?.VITE_SITE_URL ||
+    (typeof window !== "undefined"
+      ? window.location.origin
+      : "https://gyaanmanthan.in");
+  const canonicalUrl =
+    typeof window !== "undefined"
+      ? window.location.href
+      : `${siteOrigin}/profile`;
 
-const handleUpdate = () => navigate("/edit-profile");
+  const pageTitle = user
+    ? `${user.name || user.username || "My Profile"} (@${
+        user.username || "user"
+      }) – GyaanManthan`
+    : "My Profile – GyaanManthan";
 
-const handleDelete = async () => {
-  if (
-    !window.confirm(
-      "Are you sure you want to delete your account? This cannot be undone."
-    )
-  ) {
-    return;
-  }
+  const descParts = user
+    ? [
+        `${user.name || user.username || "User"} (@${
+          user.username || "user"
+        }) on GyaanManthan.`,
+        user.bio ? `Bio: ${user.bio}` : "",
+        `Posts: ${user.stats?.posts ?? 0}`,
+        `Followers: ${user.stats?.followers ?? 0}`,
+        `Following: ${user.stats?.following ?? 0}`,
+        user.stats?.likes !== undefined ? `Likes: ${user.stats.likes}` : "",
+        user.stats?.saves !== undefined ? `Saves: ${user.stats.saves}` : "",
+      ].filter(Boolean)
+    : ["View your profile on GyaanManthan – India’s Knowledge Social Media."];
 
-  const token = localStorage.getItem("token");
-  if (!token) {
-    alert("No token found. Please log in again.");
-    navigate("/login");
-    return;
-  }
+  const pageDescriptionRaw = descParts.join(" • ");
+  const pageDescription =
+    pageDescriptionRaw.length > 180
+      ? pageDescriptionRaw.slice(0, 179).trimEnd() + "…"
+      : pageDescriptionRaw;
 
-  try {
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/user`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
+  const ogImage =
+    user?.bannerUrl || user?.avatarUrl || `${siteOrigin}/og-image-1200x630.png`;
 
-    const data = await res.json().catch(() => ({}));
+  const robots =
+    user?.status === "blocked" || user?.status === "deleted"
+      ? "noindex,nofollow"
+      : "index,follow";
 
-    if (res.ok) {
-      localStorage.removeItem("token");
-      alert("✅ Account deleted successfully");
-      navigate("/signup");
-    } else {
-      alert(`❌ Failed to delete account: ${data.message || res.statusText}`);
-    }
-  } catch (err) {
-    console.error("Delete request error:", err);
-    alert("❌ Server error while deleting account");
-  }
-};
-
-const handleResetPassword = async () => {
-  if (!user?.email) {
-    alert("No email found for this account");
-    return;
-  }
-
-  try {
-    const res = await fetch(
-      `${import.meta.env.VITE_API_URL}/api/auth-mail/request-reset`,
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
       {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: user.email }),
-      }
+        "@type": "ProfilePage",
+        name: pageTitle,
+        url: canonicalUrl,
+        description: pageDescription,
+        dateModified: new Date().toISOString(),
+      },
+      {
+        "@type": "Person",
+        name: user?.name || user?.username || "User",
+        alternateName: user?.username ? `@${user.username}` : undefined,
+        url: canonicalUrl,
+        image: user?.avatarUrl || undefined,
+        description: user?.bio || undefined,
+        homeLocation: user?.location || undefined,
+        sameAs: user?.website ? [user.website] : undefined,
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: `${siteOrigin}/` },
+          { "@type": "ListItem", position: 2, name: "My Profile", item: canonicalUrl },
+        ],
+      },
+    ],
+  };
+
+  if (loading)
+    return (
+      <>
+        <SEO
+          title={pageTitle}
+          description={pageDescription}
+          canonical={canonicalUrl}
+          robots="index,follow"
+          openGraph={{
+            title: pageTitle,
+            description: pageDescription,
+            url: canonicalUrl,
+            type: "profile",
+            site_name: "GyaanManthan",
+            image: ogImage,
+            imageWidth: 1200,
+            imageHeight: 630,
+            locale: "en_IN",
+          }}
+          twitter={{
+            card: "summary_large_image",
+            title: pageTitle,
+            description: pageDescription,
+            image: ogImage,
+            site: "@gyaanmanthan",
+          }}
+          jsonLd={jsonLd}
+        />
+        <div className={styles.loading}>Loading profile...</div>
+      </>
     );
+  if (!user) return null;
 
-    const data = await res.json();
+  // ---------- Settings ----------
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
 
-    if (res.ok) {
-      alert("✅ Password reset link sent to your email");
-    } else {
-      alert(`❌ ${data.message || "Failed to send reset link"}`);
+  const handleUpdate = () => navigate("/edit-profile");
+
+  const handleDelete = async () => {
+    if (
+      !window.confirm(
+        "Are you sure you want to delete your account? This cannot be undone."
+      )
+    ) {
+      return;
     }
-  } catch (err) {
-    console.error("Reset password error:", err);
-    alert("❌ Server error while sending reset link");
-  }
-};
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("No token found. Please log in again.");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/user`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok) {
+        localStorage.removeItem("token");
+        alert("✅ Account deleted successfully");
+        navigate("/signup");
+      } else {
+        alert(`❌ Failed to delete account: ${data.message || res.statusText}`);
+      }
+    } catch (err) {
+      console.error("Delete request error:", err);
+      alert("❌ Server error while deleting account");
+    }
+  };
+
+  const handleResetPassword = async () => {
+    if (!user?.email) {
+      alert("No email found for this account");
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/auth-mail/request-reset`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: user.email }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert("✅ Password reset link sent to your email");
+      } else {
+        alert(`❌ ${data.message || "Failed to send reset link"}`);
+      }
+    } catch (err) {
+      console.error("Reset password error:", err);
+      alert("❌ Server error while sending reset link");
+    }
+  };
 
   // ---------- Updated Telegram connect handler ----------
-
-const handleConnectTelegram = async () => {
-  const token = localStorage.getItem("token")?.trim();
-  if (!token) {
-    alert("❌ Please log in first");
-    return;
-  }
-
-  try {
-    console.log("🔹 Initiating Telegram connect...");
-
-    const response = await axios.get(
-      `${import.meta.env.VITE_API_URL}/api/user/connect-telegram-test`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        timeout: 10000, // 10 sec timeout
-      }
-    );
-
-    const data = response.data;
-    console.log("✅ Telegram connect response:", data);
-
-    if (data?.success && data?.authUrl) {
-      // Open Telegram deep link in new tab
-      window.open(data.authUrl, "_blank");
-    } 
-    else if (data?.message) {
-      alert(`❌ ${data.message}`);
-    } 
-    else {
-      alert("❌ Failed to initiate Telegram connect");
+  const handleConnectTelegram = async () => {
+    const token = localStorage.getItem("token")?.trim();
+    if (!token) {
+      alert("❌ Please log in first");
+      return;
     }
 
-  } catch (error: any) {
-    console.error("❌ Telegram connect error:", error);
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/user/connect-telegram-test`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          timeout: 10000,
+        }
+      );
 
-    if (axios.isAxiosError(error)) {
-      if (error.response) {
-        const msg =
-          error.response.data?.message ||
-          `Server returned ${error.response.status}`;
-        alert(`❌ ${msg}`);
-      } else if (error.request) {
-        alert("❌ No response from server. Check your network.");
+      const data = response.data;
+
+      if (data?.success && data?.authUrl) {
+        window.open(data.authUrl, "_blank");
+      } else if (data?.message) {
+        alert(`❌ ${data.message}`);
       } else {
-        alert("❌ Error: " + error.message);
+        alert("❌ Failed to initiate Telegram connect");
       }
-    } else {
-      alert("❌ Unexpected error: " + String(error));
+    } catch (error: any) {
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          const msg =
+            error.response.data?.message ||
+            `Server returned ${error.response.status}`;
+          alert(`❌ ${msg}`);
+        } else if (error.request) {
+          alert("❌ No response from server. Check your network.");
+        } else {
+          alert("❌ Error: " + error.message);
+        }
+      } else {
+        alert("❌ Unexpected error: " + String(error));
+      }
     }
-  }
-};
-
+  };
 
   // ---------- Post View Helper ----------
   const viewPost = (postId?: string, postMetaId?: string) => {
@@ -248,183 +349,226 @@ const handleConnectTelegram = async () => {
   );
 
   return (
-    <div className={styles.profileContainer}>
-      {/* ---------- Header ---------- */}
-      <header className={styles.headerBar}>
-        <h1 className={styles.welcomeText}>Welcome, {user.username}</h1>
-        <div className={styles.settingsWrapper}>
-          <button
-            className={styles.settingsBtn}
-            onClick={() => setShowSettings((prev) => !prev)}
-          >
-            <WhiteGearIcon />
-          </button>
-          {showSettings && (
-            <div className={styles.settingsDropdown}>
-              <button onClick={handleUpdate}>Update Profile</button>
-              <button onClick={handleResetPassword}>Reset Password</button>
-              <button onClick={handleDelete}>Delete Account</button>
-              <button onClick={handleLogout}>Logout</button>
-              <button onClick={handleConnectTelegram}>Connect Telegram</button>
-            </div>
-          )}
-        </div>
-      </header>
-
-      {/* ---------- Main Content ---------- */}
-      <div className={styles.scrollArea}>
-        {/* Banner */}
-        <div className={styles.bannerWrapper}>
-          <img
-            src={user.bannerUrl || "/banner-placeholder.png"}
-            alt="Profile banner"
-            className={styles.bannerImage}
-          />
-          
-        </div>
-
-        {/* User Info */}
-        <div className={styles.userInfoCard}>
-  <div className={styles.avatarWrapper}>
-    <Avatar src={user.avatarUrl} size={140} />
-  </div>
-
-  {/* ✅ Name + Golden Tick ek row me */}
-  <div className={styles.nameRow}>
-    <h2 className={styles.userName}>{user.name}</h2>
-    {(user.isGoldenVerified || user.author?.isGoldenVerified) && (
-      <img
-        src="/golden-tick.png"
-        alt="Golden Verified"
-        className={styles.goldenTickIcon}
-        title="Golden Verified"
+    <>
+      {/* SEO Head */}
+      <SEO
+        title={pageTitle}
+        description={pageDescription}
+        canonical={canonicalUrl}
+        robots={robots}
+        openGraph={{
+          title: pageTitle,
+          description: pageDescription,
+          url: canonicalUrl,
+          type: "profile",
+          site_name: "GyaanManthan",
+          image: ogImage,
+          imageWidth: 1200,
+          imageHeight: 630,
+          locale: "en_IN",
+        }}
+        twitter={{
+          card: "summary_large_image",
+          title: pageTitle,
+          description: pageDescription,
+          image: ogImage,
+          site: "@gyaanmanthan",
+        }}
+        jsonLd={jsonLd}
       />
-    )}
-  </div>
 
-  {/* ✅ Username niche */}
-  <p className={styles.userUsername}>@{user.username}</p>
+      <div className={styles.profileContainer}>
+        {/* ---------- Header ---------- */}
+        <header className={styles.headerBar}>
+          <h1 className={styles.welcomeText}>Welcome, {user.username}</h1>
+          <div className={styles.settingsWrapper}>
+            <button
+              className={styles.settingsBtn}
+              onClick={() => setShowSettings((prev) => !prev)}
+            >
+              <WhiteGearIcon />
+            </button>
+            {showSettings && (
+              <div className={styles.settingsDropdown}>
+                <button onClick={handleUpdate}>Update Profile</button>
+                <button onClick={handleResetPassword}>Reset Password</button>
+                <button onClick={handleDelete}>Delete Account</button>
+                <button onClick={handleLogout}>Logout</button>
+                <button onClick={handleConnectTelegram}>Connect Telegram</button>
+              </div>
+            )}
+          </div>
+        </header>
 
-  {/* ✅ Bio */}
-  {user.bio && <p className={styles.userBio}>{user.bio}</p>}
-
-  {/* ✅ Email */}
-  <p>
-    <strong>Email:</strong> {user.email}
-  </p>
-</div>
-
-
-        {/* Profile Grid */}
-        <div className={styles.profileGrid}>
-          {/* Left Sidebar */}
-          <div className={styles.profileLeft}>
-            <div className={styles.statsRow}>
-              <span
-                className={styles.statChip}
-                onClick={() => setActiveTab("posts")}
-              >
-                📄 {user.stats.posts} Posts
-              </span>
-              <span
-                className={styles.statChip}
-                onClick={() => setActiveTab("followers")}
-              >
-                👥 {user.stats.followers} Followers
-              </span>
-              <span
-                className={styles.statChip}
-                onClick={() => setActiveTab("following")}
-              >
-                ➡️ {user.stats.following} Following
-              </span>
-              {user.stats.likes !== undefined && (
-                <span className={styles.statChip}>❤️ {user.stats.likes} Likes</span>
-              )}
-              {user.stats.saves !== undefined && (
-                <span className={styles.statChip}>💾 {user.stats.saves} Saves</span>
-              )}
-            </div>
-
-            {/* Tabs */}
-            <div className={styles.tabRow}>
-              <button
-                className={activeTab === "posts" ? styles.activeTab : ""}
-                onClick={() => setActiveTab("posts")}
-              >
-                Posts
-              </button>
-              <button
-                className={activeTab === "saved" ? styles.activeTab : ""}
-                onClick={() => setActiveTab("saved")}
-              >
-                Saved
-              </button>
-              <button
-                className={activeTab === "liked" ? styles.activeTab : ""}
-                onClick={() => setActiveTab("liked")}
-              >
-                Liked
-              </button>
-              <button
-                className={activeTab === "followers" ? styles.activeTab : ""}
-                onClick={() => setActiveTab("followers")}
-              >
-                Followers
-              </button>
-              <button
-                className={activeTab === "following" ? styles.activeTab : ""}
-                onClick={() => setActiveTab("following")}
-              >
-                Following
-              </button>
-              <button
-                className={activeTab === "notifications" ? styles.activeTab : ""}
-                onClick={() => setActiveTab("notifications")}
-              >
-                Notifications
-              </button>
-            </div>
+        {/* ---------- Main Content ---------- */}
+        <div className={styles.scrollArea}>
+          {/* Banner */}
+          <div className={styles.bannerWrapper}>
+            <img
+              src={user.bannerUrl || "/banner-placeholder.png"}
+              alt="Profile banner"
+              className={styles.bannerImage}
+            />
           </div>
 
-          {/* Right Content */}
-          <div className={styles.profileRight}>
-            {["posts", "saved", "liked"].includes(activeTab) && renderSubTabs()}
+          {/* User Info */}
+          <div className={styles.userInfoCard}>
+            <div className={styles.avatarWrapper}>
+              <Avatar src={user.avatarUrl} size={140} />
+            </div>
 
-            {activeTab === "posts" &&
-              (subTab === "posts" ? (
-                <PostList posts={user.posts} viewPost={viewPost} />
-              ) : (
-                <PostList posts={user.postMetas} viewPost={viewPost} tabType="postMeta" />
-              ))}
+            {/* Name + Golden Tick */}
+            <div className={styles.nameRow}>
+              <h2 className={styles.userName}>{user.name}</h2>
+              {(user.isGoldenVerified || user.author?.isGoldenVerified) && (
+                <img
+                  src="/golden-tick.png"
+                  alt="Golden Verified"
+                  className={styles.goldenTickIcon}
+                  title="Golden Verified"
+                />
+              )}
+            </div>
 
-            {activeTab === "saved" &&
-              (subTab === "posts" ? (
-                <PostList posts={user.savedPosts} viewPost={viewPost} />
-              ) : (
-                <PostList posts={user.savedPostMetas} viewPost={viewPost} tabType="postMeta" />
-              ))}
+            {/* Username */}
+            <p className={styles.userUsername}>@{user.username}</p>
 
-            {activeTab === "liked" &&
-              (subTab === "posts" ? (
-                <PostList posts={user.likedPosts} viewPost={viewPost} />
-              ) : (
-                <PostList posts={user.likedPostMetas} viewPost={viewPost} tabType="postMeta" />
-              ))}
+            {/* Bio */}
+            {user.bio && <p className={styles.userBio}>{user.bio}</p>}
 
-            {activeTab === "followers" && (
-              <UserList list={user.followersList} type="followers" />
-            )}
-            {activeTab === "following" && (
-              <UserList list={user.followingList} type="following" />
-            )}
-            {activeTab === "notifications" && (
-              <NotificationList notifications={user.notifications} />
-            )}
+            {/* Email */}
+            <p>
+              <strong>Email:</strong> {user.email}
+            </p>
+          </div>
+
+          {/* Profile Grid */}
+          <div className={styles.profileGrid}>
+            {/* Left Sidebar */}
+            <div className={styles.profileLeft}>
+              <div className={styles.statsRow}>
+                <span
+                  className={styles.statChip}
+                  onClick={() => setActiveTab("posts")}
+                >
+                  📄 {user.stats.posts} Posts
+                </span>
+                <span
+                  className={styles.statChip}
+                  onClick={() => setActiveTab("followers")}
+                >
+                  👥 {user.stats.followers} Followers
+                </span>
+                <span
+                  className={styles.statChip}
+                  onClick={() => setActiveTab("following")}
+                >
+                  ➡️ {user.stats.following} Following
+                </span>
+                {user.stats.likes !== undefined && (
+                  <span className={styles.statChip}>
+                    ❤️ {user.stats.likes} Likes
+                  </span>
+                )}
+                {user.stats.saves !== undefined && (
+                  <span className={styles.statChip}>
+                    💾 {user.stats.saves} Saves
+                  </span>
+                )}
+              </div>
+
+              {/* Tabs */}
+              <div className={styles.tabRow}>
+                <button
+                  className={activeTab === "posts" ? styles.activeTab : ""}
+                  onClick={() => setActiveTab("posts")}
+                >
+                  Posts
+                </button>
+                <button
+                  className={activeTab === "saved" ? styles.activeTab : ""}
+                  onClick={() => setActiveTab("saved")}
+                >
+                  Saved
+                </button>
+                <button
+                  className={activeTab === "liked" ? styles.activeTab : ""}
+                  onClick={() => setActiveTab("liked")}
+                >
+                    Liked
+                </button>
+                <button
+                  className={activeTab === "followers" ? styles.activeTab : ""}
+                  onClick={() => setActiveTab("followers")}
+                >
+                  Followers
+                </button>
+                <button
+                  className={activeTab === "following" ? styles.activeTab : ""}
+                  onClick={() => setActiveTab("following")}
+                >
+                  Following
+                </button>
+                <button
+                  className={activeTab === "notifications" ? styles.activeTab : ""}
+                  onClick={() => setActiveTab("notifications")}
+                >
+                  Notifications
+                </button>
+              </div>
+            </div>
+
+            {/* Right Content */}
+            <div className={styles.profileRight}>
+              {["posts", "saved", "liked"].includes(activeTab) && renderSubTabs()}
+
+              {activeTab === "posts" &&
+                (subTab === "posts" ? (
+                  <PostList posts={user.posts} viewPost={viewPost} />
+                ) : (
+                  <PostList
+                    posts={user.postMetas}
+                    viewPost={viewPost}
+                    tabType="postMeta"
+                  />
+                ))}
+
+              {activeTab === "saved" &&
+                (subTab === "posts" ? (
+                  <PostList posts={user.savedPosts} viewPost={viewPost} />
+                ) : (
+                  <PostList
+                    posts={user.savedPostMetas}
+                    viewPost={viewPost}
+                    tabType="postMeta"
+                  />
+                ))}
+
+              {activeTab === "liked" &&
+                (subTab === "posts" ? (
+                  <PostList posts={user.likedPosts} viewPost={viewPost} />
+                ) : (
+                  <PostList
+                    posts={user.likedPostMetas}
+                    viewPost={viewPost}
+                    tabType="postMeta"
+                  />
+                ))}
+
+              {activeTab === "followers" && (
+                <UserList list={user.followersList} type="followers" />
+              )}
+              {activeTab === "following" && (
+                <UserList list={user.followingList} type="following" />
+              )}
+              {activeTab === "notifications" && (
+                <NotificationList notifications={user.notifications} />
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -440,10 +584,9 @@ function PostList({
 }) {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
-  const currentUserId = localStorage.getItem("userId"); // 👈 current user id
+  const currentUserId = localStorage.getItem("userId");
 
- if (!posts.length) return <p className={styles.noPosts}>No posts yet.</p>;
-
+  if (!posts.length) return <p className={styles.noPosts}>No posts yet.</p>;
 
   const handleDelete = async (id: string) => {
     if (!window.confirm("Are you sure you want to delete this item?")) return;
@@ -489,7 +632,7 @@ function PostList({
             ? p.postMeta?._id?.$oid || p.postMeta?._id
             : p.postMeta);
 
-        const isOwner = p.authorId === currentUserId; // 👈 check ownership
+        const isOwner = p.authorId === currentUserId;
 
         return (
           <div
@@ -517,27 +660,27 @@ function PostList({
             {isOwner && (
               <div className={styles.postActions}>
                 {tabType !== "postMeta" && (
-                 <button
-                  className={styles.editBtn}
-  onClick={(e) => {
-    e.stopPropagation();
-    handleEdit(oid);
-  }}
->
-  <PencilSquareIcon className="h-5 w-5 inline-block mr-1" />
-  Edit
-</button>
+                  <button
+                    className={styles.editBtn}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleEdit(oid);
+                    }}
+                  >
+                    <PencilSquareIcon className="h-5 w-5 inline-block mr-1" />
+                    Edit
+                  </button>
                 )}
                 <button
-  className={styles.deleteBtn}
-  onClick={(e) => {
-    e.stopPropagation();
-    handleDelete(oid);
-  }}
->
-  <TrashIcon className="h-5 w-5 inline-block mr-1" />
-  Delete
-</button>
+                  className={styles.deleteBtn}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(oid);
+                  }}
+                >
+                  <TrashIcon className="h-5 w-5 inline-block mr-1" />
+                  Delete
+                </button>
               </div>
             )}
           </div>
@@ -546,13 +689,13 @@ function PostList({
     </div>
   );
 }
+
 // ---------- UserList ----------
 function UserList({ list, type }: { list: any[]; type: string }) {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const [following, setFollowing] = useState<Record<string, boolean>>({});
 
-  // ✅ Mount पर summary से following IDs लाओ
   useEffect(() => {
     const fetchFollowing = async () => {
       try {
@@ -582,7 +725,6 @@ function UserList({ list, type }: { list: any[]; type: string }) {
       const isCurrentlyFollowing = following[id];
       const endpoint = isCurrentlyFollowing ? "unfollow" : "follow";
 
-      // ✅ सही payload key
       const body = isCurrentlyFollowing
         ? { userIdToUnfollow: id }
         : { userIdToFollow: id };
@@ -604,7 +746,6 @@ function UserList({ list, type }: { list: any[]; type: string }) {
         throw new Error(errData.message || "Request failed");
       }
 
-      // ✅ Local state update
       setFollowing((prev) => ({
         ...prev,
         [id]: !isCurrentlyFollowing,
@@ -650,7 +791,6 @@ function UserList({ list, type }: { list: any[]; type: string }) {
     </ul>
   );
 }
-
 
 // ---------- NotificationList ----------
 function NotificationList({ notifications }: { notifications: any[] }) {

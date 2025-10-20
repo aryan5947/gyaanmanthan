@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
+import SEO from "../components/SEO";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
@@ -194,7 +195,7 @@ export default function StoryViewPage() {
       setDuration(15);
     }
     setSeek(0);
-  }, [currentIdx, currentMediaIdx, status]);
+  }, [currentIdx, currentMediaIdx, status]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Timer control
   useEffect(() => {
@@ -217,7 +218,7 @@ export default function StoryViewPage() {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-    // eslint-disable-next-line
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [duration, status, currentMediaIdx]);
 
   // Delete status
@@ -353,6 +354,38 @@ export default function StoryViewPage() {
   if (loading)
     return (
       <div className="svp-root">
+        {/* SEO while loading */}
+        <SEO
+          title={"Stories — GyaanManthan"}
+          description={"View stories on GyaanManthan"}
+          canonical={`${(import.meta as any).env?.VITE_SITE_URL || (typeof window !== "undefined" ? window.location.origin : "https://gyaanmanthan.in")}/status/${userId || ""}`}
+          robots="index,follow"
+          openGraph={{
+            title: "Stories — GyaanManthan",
+            description: "View stories on GyaanManthan",
+            url: `${(import.meta as any).env?.VITE_SITE_URL || (typeof window !== "undefined" ? window.location.origin : "https://gyaanmanthan.in")}/status/${userId || ""}`,
+            type: "website",
+            site_name: "GyaanManthan",
+            image: `${(import.meta as any).env?.VITE_SITE_URL || (typeof window !== "undefined" ? window.location.origin : "https://gyaanmanthan.in")}/og-image-1200x630.png`,
+            imageWidth: 1200,
+            imageHeight: 630,
+            locale: "en_IN",
+          }}
+          twitter={{
+            card: "summary_large_image",
+            title: "Stories — GyaanManthan",
+            description: "View stories on GyaanManthan",
+            image: `${(import.meta as any).env?.VITE_SITE_URL || (typeof window !== "undefined" ? window.location.origin : "https://gyaanmanthan.in")}/twitter-image-1200x600.png`,
+            site: "@gyaanmanthan",
+          }}
+          jsonLd={{
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            name: "Stories — GyaanManthan",
+            url: `${(import.meta as any).env?.VITE_SITE_URL || (typeof window !== "undefined" ? window.location.origin : "https://gyaanmanthan.in")}/status/${userId || ""}`,
+            description: "View stories on GyaanManthan"
+          }}
+        />
         <div className="svp-panel">
           <div className="svp-loading">Loading…</div>
         </div>
@@ -362,6 +395,37 @@ export default function StoryViewPage() {
   if (!status)
     return (
       <div className="svp-root">
+        <SEO
+          title={"Stories — GyaanManthan"}
+          description={"No stories available"}
+          canonical={`${(import.meta as any).env?.VITE_SITE_URL || (typeof window !== "undefined" ? window.location.origin : "https://gyaanmanthan.in")}/status/${userId || ""}`}
+          robots="noindex,follow"
+          openGraph={{
+            title: "Stories — GyaanManthan",
+            description: "No stories available",
+            url: `${(import.meta as any).env?.VITE_SITE_URL || (typeof window !== "undefined" ? window.location.origin : "https://gyaanmanthan.in")}/status/${userId || ""}`,
+            type: "website",
+            site_name: "GyaanManthan",
+            image: `${(import.meta as any).env?.VITE_SITE_URL || (typeof window !== "undefined" ? window.location.origin : "https://gyaanmanthan.in")}/og-image-1200x630.png`,
+            imageWidth: 1200,
+            imageHeight: 630,
+            locale: "en_IN",
+          }}
+          twitter={{
+            card: "summary_large_image",
+            title: "Stories — GyaanManthan",
+            description: "No stories available",
+            image: `${(import.meta as any).env?.VITE_SITE_URL || (typeof window !== "undefined" ? window.location.origin : "https://gyaanmanthan.in")}/twitter-image-1200x600.png`,
+            site: "@gyaanmanthan",
+          }}
+          jsonLd={{
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            name: "Stories — GyaanManthan",
+            url: `${(import.meta as any).env?.VITE_SITE_URL || (typeof window !== "undefined" ? window.location.origin : "https://gyaanmanthan.in")}/status/${userId || ""}`,
+            description: "No stories available"
+          }}
+        />
         <div className="svp-panel">
           <div className="svp-error">No stories for this user.</div>
         </div>
@@ -372,8 +436,106 @@ export default function StoryViewPage() {
   const hasText = Boolean(status.content && status.content.trim());
   const isTextOnly = (!status.media || status.media.length === 0) && hasText;
 
+  // ---------- SEO dynamic data ----------
+  const siteOrigin =
+    (import.meta as any).env?.VITE_SITE_URL ||
+    (typeof window !== "undefined" ? window.location.origin : "https://gyaanmanthan.in");
+
+  const canonicalUrl = `${siteOrigin}/status/${userId || ""}`;
+
+  const currentMedia = status.media?.[currentMediaIdx];
+  const ogImage =
+    (currentMedia?.type === "image" && currentMedia.url) ||
+    status.userAvatar ||
+    `${siteOrigin}/og-image-1200x630.png`;
+
+  const pageTitle = `${status.userName}'s Stories — GyaanManthan`;
+  const descBase =
+    (status.content && status.content.trim()) ||
+    (currentMedia?.type ? `A ${currentMedia.type} story by ${status.userName}` : `Stories by ${status.userName}`);
+  const pageDescription = descBase.length > 180 ? descBase.slice(0, 179).trimEnd() + "…" : descBase;
+
+  const robots = "index,follow";
+
+  // JSON-LD: SocialMediaPosting with optional media
+  const jsonLd: any = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SocialMediaPosting",
+        headline: pageTitle,
+        articleBody: status.content || "",
+        datePublished: status.createdAt,
+        author: {
+          "@type": "Person",
+          name: status.userName,
+          image: status.userAvatar || undefined
+        },
+        publisher: {
+          "@type": "Organization",
+          name: "GyaanManthan",
+          logo: {
+            "@type": "ImageObject",
+            url: `${siteOrigin}/logo-512x512.png`
+          }
+        },
+        mainEntityOfPage: {
+          "@type": "WebPage",
+          "@id": canonicalUrl
+        }
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: `${siteOrigin}/` },
+          { "@type": "ListItem", position: 2, name: "Stories", item: `${siteOrigin}/status/${userId || ""}` }
+        ]
+      }
+    ]
+  };
+
+  if (currentMedia?.type === "image") {
+    jsonLd["@graph"][0].sharedContent = {
+      "@type": "ImageObject",
+      url: currentMedia.url
+    };
+  } else if (currentMedia?.type === "video") {
+    jsonLd["@graph"][0].sharedContent = {
+      "@type": "VideoObject",
+      contentUrl: currentMedia.url,
+      name: `${status.userName}'s story video`
+    };
+  }
+
   return (
     <div className="svp-root">
+      {/* SEO Head */}
+      <SEO
+        title={pageTitle}
+        description={pageDescription}
+        canonical={canonicalUrl}
+        robots={robots}
+        openGraph={{
+          title: pageTitle,
+          description: pageDescription,
+          url: canonicalUrl,
+          type: currentMedia?.type === "video" ? "video.other" : "website",
+          site_name: "GyaanManthan",
+          image: ogImage,
+          imageWidth: 1200,
+          imageHeight: 630,
+          locale: "en_IN",
+        }}
+        twitter={{
+          card: "summary_large_image",
+          title: pageTitle,
+          description: pageDescription,
+          image: ogImage,
+          site: "@gyaanmanthan",
+        }}
+        jsonLd={jsonLd}
+      />
+
       <div className="svp-panel">
         {/* 🔹 Top Bar with Progress */}
         <div className="svp-topbar">

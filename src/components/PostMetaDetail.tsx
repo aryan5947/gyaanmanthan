@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import SEO from "../components/SEO";
 import { useParams } from "react-router-dom";
 import CommentsModal from "../components/postMetacomments";
 import Lightbox from "yet-another-react-lightbox";
@@ -236,6 +237,36 @@ const PostFilesPreview: React.FC<{ files: FileItem[] }> = ({ files }) => {
     </>
   );
 };
+
+// ---------- Helpers for SEO description ----------
+const normalizeContent = (content: any): any[] => {
+  if (!content) return [];
+  if (Array.isArray(content)) return content;
+  if (typeof content === "string") {
+    const trimmed = content.trim();
+    if (
+      (trimmed.startsWith("[") && trimmed.endsWith("]")) ||
+      (trimmed.startsWith("{") && trimmed.endsWith("}"))
+    ) {
+      try {
+        const parsed = JSON.parse(trimmed);
+        if (Array.isArray(parsed)) return parsed;
+        if (parsed && typeof parsed === "object") return [parsed];
+      } catch {}
+    }
+    return [{ type: "paragraph", children: [{ text: content }] }];
+  }
+  return [];
+};
+const contentToPlainText = (content: any): string =>
+  normalizeContent(content)
+    .map((block: any) =>
+      Array.isArray(block?.children)
+        ? block.children.map((c: any) => c?.text || "").join("")
+        : ""
+    )
+    .join(" ")
+    .trim();
 
 // ---------- Detail Page ----------
 export default function PostMetaDetailPage() {
@@ -511,20 +542,232 @@ export default function PostMetaDetailPage() {
     }
   };
 
-  if (loading) return <p>Loading...</p>;
+  // ---------- SEO variables ----------
+  const siteOrigin =
+    (import.meta as any).env?.VITE_SITE_URL ||
+    (typeof window !== "undefined" ? window.location.origin : "https://gyaanmanthan.in");
+
+  const canonicalUrl = `${siteOrigin}/post-meta/${id || post?._id || ""}`;
+
+  const pageTitle = post
+    ? `${post.title || "Post"} — ${post.authorName || post.author?.name || "GyaanManthan"} | GyaanManthan`
+    : "Post — GyaanManthan";
+
+  const pageDescription =
+    (post?.description && post.description.trim()) ||
+    (post?.content ? contentToPlainText(post.content).slice(0, 180) : "Explore and share gyaan on GyaanManthan.");
+
+  const ogImage =
+    (post?.files || []).find((f) => f.type?.startsWith("image"))?.url ||
+    `${siteOrigin}/og-image-1200x630.png`;
+
+  const robots =
+    post?.status === "restricted" || post?.status === "blocked" || post?.status === "deleted"
+      ? "noindex,nofollow"
+      : "index,follow";
+
+  const jsonLd = post
+    ? {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Article",
+            headline: post.title || "Post",
+            description: pageDescription,
+            image: [ogImage],
+            datePublished: post.createdAt || undefined,
+            author: {
+              "@type": "Person",
+              name: post.authorName || post.author?.name || "Unknown",
+              url: post.authorUsername ? `${siteOrigin}/user/${post.authorUsername}` : undefined
+            },
+            publisher: {
+              "@type": "Organization",
+              name: "GyaanManthan",
+              logo: {
+                "@type": "ImageObject",
+                url: `${siteOrigin}/logo-512x512.png`
+              }
+            },
+            mainEntityOfPage: {
+              "@type": "WebPage",
+              "@id": canonicalUrl
+            }
+          },
+          {
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Home", item: `${siteOrigin}/` },
+              { "@type": "ListItem", position: 2, name: "Feed", item: `${siteOrigin}/feed` },
+              { "@type": "ListItem", position: 3, name: post.title || "Post", item: canonicalUrl }
+            ]
+          }
+        ]
+      }
+    : {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        name: "Post — GyaanManthan",
+        url: canonicalUrl,
+        description: pageDescription
+      };
+
+  if (loading) return (
+    <>
+      <SEO
+        title={pageTitle}
+        description={pageDescription}
+        canonical={canonicalUrl}
+        robots={robots}
+        openGraph={{
+          title: pageTitle,
+          description: pageDescription,
+          url: canonicalUrl,
+          type: "article",
+          site_name: "GyaanManthan",
+          image: ogImage,
+          imageWidth: 1200,
+          imageHeight: 630,
+          locale: "en_IN",
+        }}
+        twitter={{
+          card: "summary_large_image",
+          title: pageTitle,
+          description: pageDescription,
+          image: ogImage,
+          site: "@gyaanmanthan",
+        }}
+        jsonLd={jsonLd}
+      />
+      <p>Loading...</p>
+    </>
+  );
+
   if (error?.includes("policy restrictions")) {
     return (
-      <div className="restricted-message">
-        <h2>🔒 Content Restricted</h2>
-        <p>{error}</p>
-      </div>
+      <>
+        <SEO
+          title={pageTitle}
+          description={pageDescription}
+          canonical={canonicalUrl}
+          robots="noindex,nofollow"
+          openGraph={{
+            title: pageTitle,
+            description: pageDescription,
+            url: canonicalUrl,
+            type: "article",
+            site_name: "GyaanManthan",
+            image: ogImage,
+            imageWidth: 1200,
+            imageHeight: 630,
+            locale: "en_IN",
+          }}
+          twitter={{
+            card: "summary_large_image",
+            title: pageTitle,
+            description: pageDescription,
+            image: ogImage,
+            site: "@gyaanmanthan",
+          }}
+          jsonLd={jsonLd}
+        />
+        <div className="restricted-message">
+          <h2>🔒 Content Restricted</h2>
+          <p>{error}</p>
+        </div>
+      </>
     );
   }
-  if (error) return <p>{error}</p>;
-  if (!post) return <p>Not found</p>;
+  if (error) return (
+    <>
+      <SEO
+        title={pageTitle}
+        description={pageDescription}
+        canonical={canonicalUrl}
+        robots="noindex,follow"
+        openGraph={{
+          title: pageTitle,
+          description: pageDescription,
+          url: canonicalUrl,
+          type: "article",
+          site_name: "GyaanManthan",
+          image: ogImage,
+          imageWidth: 1200,
+          imageHeight: 630,
+          locale: "en_IN",
+        }}
+        twitter={{
+          card: "summary_large_image",
+          title: pageTitle,
+          description: pageDescription,
+          image: ogImage,
+          site: "@gyaanmanthan",
+        }}
+        jsonLd={jsonLd}
+      />
+      <p>{error}</p>
+    </>
+  );
+  if (!post) return (
+    <>
+      <SEO
+        title={pageTitle}
+        description={pageDescription}
+        canonical={canonicalUrl}
+        robots="noindex,follow"
+        openGraph={{
+          title: pageTitle,
+          description: pageDescription,
+          url: canonicalUrl,
+          type: "article",
+          site_name: "GyaanManthan",
+          image: ogImage,
+          imageWidth: 1200,
+          imageHeight: 630,
+          locale: "en_IN",
+        }}
+        twitter={{
+          card: "summary_large_image",
+          title: pageTitle,
+          description: pageDescription,
+          image: ogImage,
+          site: "@gyaanmanthan",
+        }}
+        jsonLd={jsonLd}
+      />
+      <p>Not found</p>
+    </>
+  );
 
   return (
     <div className="feed-page-wrapper">
+      {/* SEO Head */}
+      <SEO
+        title={pageTitle}
+        description={pageDescription}
+        canonical={canonicalUrl}
+        robots={robots}
+        openGraph={{
+          title: pageTitle,
+          description: pageDescription,
+          url: canonicalUrl,
+          type: "article",
+          site_name: "GyaanManthan",
+          image: ogImage,
+          imageWidth: 1200,
+          imageHeight: 630,
+          locale: "en_IN",
+        }}
+        twitter={{
+          card: "summary_large_image",
+          title: pageTitle,
+          description: pageDescription,
+          image: ogImage,
+          site: "@gyaanmanthan",
+        }}
+        jsonLd={jsonLd}
+      />
+
       <div className="feed-scroll-area">
         <div className="feed-card-list">
           <article className="tweet-card detail-page" key={post._id}>
@@ -580,17 +823,17 @@ export default function PostMetaDetailPage() {
               <button className={`icon-btn save-btn ${savedPosts.includes(post._id) ? "active" : ""}`} onClick={toggleSave} aria-label="Save">
                 {savedPosts.includes(post._id) ? <BookmarkIconSolid className="icon active-icon" /> : <BookmarkIconOutline className="icon" />}
               </button>
-             <button
-                                    className="icon-btn"
-                                    onClick={(e) => {
-                                    e.stopPropagation();
-                                     setSelectedPost(post);
-                                    setIsShareOpen(true);
-                                      }}
-                                    aria-label="Share"
-                                     >
-                                    <ShareIcon className="icon" />
-                                   </button>
+              <button
+                className="icon-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedPost(post);
+                  setIsShareOpen(true);
+                }}
+                aria-label="Share"
+              >
+                <ShareIcon className="icon" />
+              </button>
               <button className="icon-btn" onClick={() => setIsCommentsOpen(true)} aria-label="Comment">
                 <ChatBubbleOvalLeftIcon className="icon" />
               </button>
@@ -625,7 +868,7 @@ export default function PostMetaDetailPage() {
         />
       )}
 
-         {selectedPost && isShareOpen && (
+      {selectedPost && isShareOpen && (
         <ShareModal
           url={`${window.location.origin}/post-meta/${selectedPost._id}`}
           title={selectedPost.title}
