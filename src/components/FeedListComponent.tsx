@@ -433,6 +433,12 @@ export default function FeedPage() {
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [isReportOpen, setIsReportOpen] = useState(false);
 
+  // NEW: sort mode
+  const [sortMode, setSortMode] = useState<"latest" | "trending">("trending");
+  // if you want to expose window size, tweak here
+  const TRENDING_WINDOW_HOURS = 48;
+  const PAGE_SIZE = 20;
+
   const [followedAuthors, setFollowedAuthors] = useState<string[]>(() => {
     const saved = localStorage.getItem("followedAuthors");
     return saved ? JSON.parse(saved) : [];
@@ -449,11 +455,24 @@ export default function FeedPage() {
   const token = localStorage.getItem("token");
   const currentUserId = localStorage.getItem("userId");
 
-  // --- On mount: fetch feed & reconcile likes/saves/following with backend ---
+  // --- On mount or when sortMode changes: fetch feed & reconcile interactions ---
   useEffect(() => {
     const fetchFeed = async () => {
+      // Build URL with trending or latest
+      const params = new URLSearchParams();
+      if (sortMode === "trending") {
+        params.set("sort", "trending");
+        params.set("windowHours", String(TRENDING_WINDOW_HOURS));
+        params.set("page", "1");
+        params.set("limit", String(PAGE_SIZE));
+      } else {
+        params.set("limit", String(PAGE_SIZE));
+      }
+
+      const url = `${import.meta.env.VITE_API_URL}/api/post-meta/feed${params.toString() ? `?${params.toString()}` : ""}`;
+
       const { data, error } = await safeFetch(
-        `${import.meta.env.VITE_API_URL}/api/post-meta/feed`,
+        url,
         {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         },
@@ -465,14 +484,14 @@ export default function FeedPage() {
         return;
       }
 
-      // Unified feed: posts + ads
+      // Unified feed: posts + sponsored
       const feedItems: any[] = Array.isArray(data.feed) ? data.feed : [];
 
-      // Normalize + filter deleted
+      // IMPORTANT: map "sponsored" to postType "ad"
       const cleaned: Post[] = feedItems
         .map((item: any) => ({
           ...item.data,
-          postType: item.type === "ad" ? "ad" : "post",
+          postType: item.type === "ad" || item.type === "sponsored" ? "ad" : "post",
         }))
         .filter((meta: Post) => meta.status !== "deleted");
 
@@ -531,7 +550,7 @@ export default function FeedPage() {
     // Small staggering to avoid burst on cold page load
     fetchFeed();
     setTimeout(fetchUserInteractions, 250);
-  }, [token]);
+  }, [token, sortMode]);
 
   // ---------- Slotting Logic ----------
   const injectAdsIntoFeed = (
@@ -607,22 +626,18 @@ export default function FeedPage() {
   };
 
   // ------------------ View Register (throttled queue) ------------------
-  // We'll use a Set to make sure each post is only viewed once per session
   const viewedPostIds = useRef<Set<string>>(new Set());
 
-  // Split posts and ads for base data (not used directly in render)
+  // Split posts and ads for base data
   const basePostsOnly = posts.filter((p) => p.postType === "post");
   const baseAdsOnly = posts.filter((p) => p.postType === "ad");
-  // Note: no 'slottedFeed' here to avoid unused variable warnings
 
   const registerView = async (postId: string, postType: "post" | "ad" = "post") => {
     const uniqueKey = `${postType}-${postId}`;
 
-    // Prevent duplicate view registration for same post/ad (per session)
     if (viewedPostIds.current.has(uniqueKey)) return;
     viewedPostIds.current.add(uniqueKey);
 
-    // Optimistic update for views
     setPosts((prevPosts) =>
       prevPosts.map((p) =>
         p._id === postId && p.postType === postType
@@ -637,7 +652,6 @@ export default function FeedPage() {
       )
     );
 
-    // Enqueue to throttled queue to avoid 429 bursts
     const token = localStorage.getItem("token");
     globalViewsQueue.enqueue({ postId, postType, token });
   };
@@ -770,14 +784,12 @@ export default function FeedPage() {
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
 
-        // If backend says already saved, force UI to saved state
         if (err.message?.includes("Already saved")) {
           const forced = [...new Set([...prev, postId])];
           setSavedPosts(forced);
           localStorage.setItem("savedPosts", JSON.stringify(forced));
           return;
         }
-        // If backend says already unsaved, force UI to unsaved state
         if (err.message?.includes("Already unsaved")) {
           const forced = prev.filter((id) => id !== postId);
           setSavedPosts(forced);
@@ -818,7 +830,6 @@ export default function FeedPage() {
   const filteredSlottedFeed = injectAdsIntoFeed(filteredPostsOnly, filteredAdsOnly, 5);
 
   // ---------- Intersection Observer for All Posts ----------
-  // This ensures view count increases as soon as post is visible on screen!
   const postRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
   useEffect(() => {
@@ -924,6 +935,23 @@ export default function FeedPage() {
         jsonLd={jsonLd}
       />
 
+      {/* NEW: Sort toggle */}
+      <div className="feed-sort-row" style={{ display: "flex", gap: 8, alignItems: "center", padding: "8px 16px" }}>
+        <span style={{ fontWeight: 600 }}>Sort:</span>
+        <button
+          className={`sort-chip ${sortMode === "latest" ? "active" : ""}`}
+          onClick={() => setSortMode("latest")}
+        >
+          Latest
+        </button>
+        <button
+          className={`sort-chip ${sortMode === "trending" ? "active" : ""}`}
+          onClick={() => setSortMode("trending")}
+        >
+          Trending
+        </button>
+      </div>
+
       <div className="feed-filters-area">
         <PostFilters onSearch={handleSearch} />
       </div>
@@ -936,7 +964,7 @@ export default function FeedPage() {
               const isSaved = savedPosts.includes(post._id);
               const uniqueKey = `${post.postType}-${post._id}`;
 
-              // ---------- Ad Card (Private Ads) ----------
+              // ---------- Ad Card (Sponsored/Private Ads) ----------
               if (post.postType === "ad") {
                 return (
                   <React.Fragment key={uniqueKey}>

@@ -4,7 +4,114 @@
   color: #f4e9da;
   padding-bottom: 40px;
 }
+/* Container for the sort controls */
+.feed-sort-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  position: sticky; /* keeps it visible while scrolling */
+  top: 0;
+  z-index: 5;
+  backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.7);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
 
+/* Label */
+.feed-sort-row > span {
+  font-weight: 600;
+  color: #333;
+}
+
+/* Sort chip buttons */
+.sort-chip {
+  appearance: none;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: transparent;
+  color: #444;
+  padding: 6px 12px;
+  font-size: 0.92rem;
+  line-height: 1;
+  border-radius: 999px;
+  cursor: pointer;
+  transition:
+    background 120ms ease,
+    color 120ms ease,
+    border-color 120ms ease,
+    box-shadow 120ms ease,
+    transform 60ms ease;
+  user-select: none;
+  will-change: background, color, border-color, box-shadow, transform;
+}
+
+.sort-chip:hover {
+  border-color: rgba(0, 0, 0, 0.25);
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.sort-chip:active {
+  transform: translateY(1px);
+}
+
+.sort-chip:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 224, 138, 0.65);
+}
+
+/* Active state for the selected sort */
+.sort-chip.active {
+  background: #ffe08a;          /* highlight */
+  border-color: #ffe08a;
+  color: #1a1a1a;
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.04) inset,
+    0 0 0 1px rgba(0, 0, 0, 0.04);
+}
+
+/* Disabled state (if you ever need it) */
+.sort-chip:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Mobile: keep spacing comfortable */
+@media (max-width: 768px) {
+  .feed-sort-row {
+    position: sticky;
+    top: 0;
+    padding: 8px 12px;
+    gap: 6px;
+  }
+  .sort-chip {
+    padding: 6px 10px;
+    font-size: 0.9rem;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .feed-sort-row {
+    background: rgba(20, 20, 20, 0.6);
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+  }
+  .feed-sort-row > span {
+    color: #e9e9e9;
+  }
+  .sort-chip {
+    border-color: rgba(255, 255, 255, 0.18);
+    color: #e1e1e1;
+  }
+  .sort-chip:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.28);
+  }
+  .sort-chip.active {
+    background: #ffd86a;
+    border-color: #ffd86a;
+    color: #141414;
+  }
+}
 .feed-header {
   background: linear-gradient(135deg, #181818 75%, #222222 100%);
   padding: 24px 0 8px;
